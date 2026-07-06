@@ -63,13 +63,13 @@ export default function EvaluationEngine({ endorsements, onEndorse }: Evaluation
   };
 
   return (
-    <div className="p-6 md:p-8 space-y-8 bg-[#071D32]/40 min-h-screen text-[#F3E4C9]">
+    <div className="p-6 md:p-8 space-y-8 bg-navy/40 min-h-screen text-cream">
       {/* Title Header */}
       <div>
-        <h1 className="font-vampiro text-3xl md:text-5xl uppercase tracking-wider text-[#F3E4C9]">
+        <h1 className="font-vampiro text-3xl md:text-5xl uppercase tracking-wider text-cream">
           Project Evaluation Engine
         </h1>
-        <p className="text-[#D3D4C0] font-sans text-xs mt-3 tracking-wider leading-relaxed font-light max-w-3xl">
+        <p className="text-sage font-sans text-xs mt-3 tracking-wider leading-relaxed font-light max-w-3xl">
           Comparative analysis protocol engaged. Assessing immediate constituency
           impact vectors against long-term infrastructural yields.
         </p>
@@ -79,19 +79,19 @@ export default function EvaluationEngine({ endorsements, onEndorse }: Evaluation
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* Proposal Alpha Card */}
-        <div className="bg-[#F3E4C9] text-[#071D32] border border-[#D3D4C0] rounded p-8 flex flex-col justify-between shadow-lg relative group">
-          <div className="absolute top-4 right-4 text-[#8B5E3C]">
+        <div className="bg-cream text-navy border border-sage rounded p-8 flex flex-col justify-between shadow-lg relative group">
+          <div className="absolute top-4 right-4 text-ochre">
             <GraduationCap className="w-8 h-8 opacity-75" />
           </div>
 
           <div>
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[#071D32]/60 block mb-1">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-navy/60 block mb-1">
               Proposal Alpha
             </span>
-            <h2 className="font-serif text-2xl font-bold tracking-tight text-[#071D32] mb-4">
+            <h2 className="font-serif text-2xl font-bold tracking-tight text-navy mb-4">
               School Upgrade Request
             </h2>
-            <p className="text-[#071D32]/80 text-xs font-sans font-light leading-relaxed mb-8">
+            <p className="text-navy/80 text-xs font-sans font-light leading-relaxed mb-8">
               Comprehensive structural remediation and digital infrastructure installation for District Secondary Facility. This upgrade increases enrollment bandwidth and upgrades safety indices.
             </p>
 
@@ -99,34 +99,34 @@ export default function EvaluationEngine({ endorsements, onEndorse }: Evaluation
             <div className="space-y-5">
               {/* Metric 1 */}
               <div className="space-y-1.5">
-                <div className="flex justify-between font-mono text-[10px] text-[#071D32]/70">
+                <div className="flex justify-between font-mono text-[10px] text-navy/70">
                   <span>Enrollment Deficit Mitigation</span>
-                  <span className="font-bold text-[#8B5E3C]">84%</span>
+                  <span className="font-bold text-ochre">84%</span>
                 </div>
-                <div className="w-full bg-[#071D32]/10 h-1.5 rounded overflow-hidden">
-                  <div className="bg-[#8B5E3C] h-full" style={{ width: "84%" }}></div>
+                <div className="w-full bg-navy/10 h-1.5 rounded overflow-hidden">
+                  <div className="bg-ochre h-full" style={{ width: "84%" }}></div>
                 </div>
               </div>
 
               {/* Metric 2 */}
               <div className="space-y-1.5">
-                <div className="flex justify-between font-mono text-[10px] text-[#071D32]/70">
+                <div className="flex justify-between font-mono text-[10px] text-navy/70">
                   <span>Travel-Distance Gap Impact</span>
-                  <span className="font-bold text-[#8B5E3C]">42%</span>
+                  <span className="font-bold text-ochre">42%</span>
                 </div>
-                <div className="w-full bg-[#071D32]/10 h-1.5 rounded overflow-hidden">
-                  <div className="bg-[#8B5E3C] h-full" style={{ width: "42%" }}></div>
+                <div className="w-full bg-navy/10 h-1.5 rounded overflow-hidden">
+                  <div className="bg-ochre h-full" style={{ width: "42%" }}></div>
                 </div>
               </div>
 
               {/* Metric 3 */}
               <div className="space-y-1.5">
-                <div className="flex justify-between font-mono text-[10px] text-[#071D32]/70">
+                <div className="flex justify-between font-mono text-[10px] text-navy/70">
                   <span>Capital Expenditure Efficiency</span>
-                  <span className="font-bold text-[#071D32]">65%</span>
+                  <span className="font-bold text-navy">65%</span>
                 </div>
-                <div className="w-full bg-[#071D32]/10 h-1.5 rounded overflow-hidden">
-                  <div className="bg-[#071D32] h-full" style={{ width: "65%" }}></div>
+                <div className="w-full bg-navy/10 h-1.5 rounded overflow-hidden">
+                  <div className="bg-navy h-full" style={{ width: "65%" }}></div>
                 </div>
               </div>
             </div>
@@ -135,7 +135,7 @@ export default function EvaluationEngine({ endorsements, onEndorse }: Evaluation
           <div className="mt-10">
             <button
               onClick={() => { onEndorse("alpha"); setSelectedWinner("alpha"); }}
-              className="w-full py-3.5 bg-[#071D32] hover:bg-[#8B5E3C] text-[#F3E4C9] rounded font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow cursor-pointer text-center flex items-center justify-center space-x-2"
+              className="w-full py-3.5 bg-navy hover:bg-ochre text-cream rounded font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow cursor-pointer text-center flex items-center justify-center space-x-2"
             >
               {selectedWinner === "alpha" && <Check className="w-4 h-4 text-emerald-400" />}
               <span>Endorse Alpha</span>
@@ -144,19 +144,19 @@ export default function EvaluationEngine({ endorsements, onEndorse }: Evaluation
         </div>
 
         {/* Proposal Beta Card */}
-        <div className="bg-[#F3E4C9] text-[#071D32] border border-[#D3D4C0] rounded p-8 flex flex-col justify-between shadow-lg relative group">
-          <div className="absolute top-4 right-4 text-[#8B5E3C]">
+        <div className="bg-cream text-navy border border-sage rounded p-8 flex flex-col justify-between shadow-lg relative group">
+          <div className="absolute top-4 right-4 text-ochre">
             <Wrench className="w-8 h-8 opacity-75" />
           </div>
 
           <div>
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[#071D32]/60 block mb-1">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-navy/60 block mb-1">
               Proposal Beta
             </span>
-            <h2 className="font-serif text-2xl font-bold tracking-tight text-[#071D32] mb-4">
+            <h2 className="font-serif text-2xl font-bold tracking-tight text-navy mb-4">
               Vocational Centre
             </h2>
-            <p className="text-[#071D32]/80 text-xs font-sans font-light leading-relaxed mb-8">
+            <p className="text-navy/80 text-xs font-sans font-light leading-relaxed mb-8">
               Construction of a new multi-disciplinary trades facility aimed at adult reskilling and youth apprenticeship integration. This centre improves regional trade wage metrics.
             </p>
 
@@ -164,34 +164,34 @@ export default function EvaluationEngine({ endorsements, onEndorse }: Evaluation
             <div className="space-y-5">
               {/* Metric 1 */}
               <div className="space-y-1.5">
-                <div className="flex justify-between font-mono text-[10px] text-[#071D32]/70">
+                <div className="flex justify-between font-mono text-[10px] text-navy/70">
                   <span>Enrollment Deficit Mitigation</span>
-                  <span className="font-bold text-[#071D32]/60">35%</span>
+                  <span className="font-bold text-navy/60">35%</span>
                 </div>
-                <div className="w-full bg-[#071D32]/10 h-1.5 rounded overflow-hidden">
-                  <div className="bg-[#071D32]/40 h-full" style={{ width: "35%" }}></div>
+                <div className="w-full bg-navy/10 h-1.5 rounded overflow-hidden">
+                  <div className="bg-navy/40 h-full" style={{ width: "35%" }}></div>
                 </div>
               </div>
 
               {/* Metric 2 */}
               <div className="space-y-1.5">
-                <div className="flex justify-between font-mono text-[10px] text-[#071D32]/70">
+                <div className="flex justify-between font-mono text-[10px] text-navy/70">
                   <span>Travel-Distance Gap Impact</span>
-                  <span className="font-bold text-[#8B5E3C]">92%</span>
+                  <span className="font-bold text-ochre">92%</span>
                 </div>
-                <div className="w-full bg-[#071D32]/10 h-1.5 rounded overflow-hidden">
-                  <div className="bg-[#8B5E3C] h-full" style={{ width: "92%" }}></div>
+                <div className="w-full bg-navy/10 h-1.5 rounded overflow-hidden">
+                  <div className="bg-ochre h-full" style={{ width: "92%" }}></div>
                 </div>
               </div>
 
               {/* Metric 3 */}
               <div className="space-y-1.5">
-                <div className="flex justify-between font-mono text-[10px] text-[#071D32]/70">
+                <div className="flex justify-between font-mono text-[10px] text-navy/70">
                   <span>Capital Expenditure Efficiency</span>
-                  <span className="font-bold text-[#071D32]">58%</span>
+                  <span className="font-bold text-navy">58%</span>
                 </div>
-                <div className="w-full bg-[#071D32]/10 h-1.5 rounded overflow-hidden">
-                  <div className="bg-[#071D32] h-full" style={{ width: "58%" }}></div>
+                <div className="w-full bg-navy/10 h-1.5 rounded overflow-hidden">
+                  <div className="bg-navy h-full" style={{ width: "58%" }}></div>
                 </div>
               </div>
             </div>
@@ -200,7 +200,7 @@ export default function EvaluationEngine({ endorsements, onEndorse }: Evaluation
           <div className="mt-10">
             <button
               onClick={() => { onEndorse("beta"); setSelectedWinner("beta"); }}
-              className="w-full py-3.5 bg-[#071D32] hover:bg-[#8B5E3C] text-[#F3E4C9] rounded font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow cursor-pointer text-center flex items-center justify-center space-x-2"
+              className="w-full py-3.5 bg-navy hover:bg-ochre text-cream rounded font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow cursor-pointer text-center flex items-center justify-center space-x-2"
             >
               {selectedWinner === "beta" && <Check className="w-4 h-4 text-emerald-400" />}
               <span>Endorse Beta</span>
@@ -211,51 +211,51 @@ export default function EvaluationEngine({ endorsements, onEndorse }: Evaluation
       </div>
 
       {/* Live Sentiment Telemetry Banner */}
-      <div className="border border-[#D3D4C0]/20 bg-[#071D32]/80 rounded p-6 backdrop-blur-sm relative">
-        <div className="absolute top-0 left-4 -translate-y-1/2 bg-[#071D32] px-2 text-[10px] font-mono text-[#8B5E3C] uppercase tracking-widest">
+      <div className="border border-sage/20 bg-navy/80 rounded p-6 backdrop-blur-sm relative">
+        <div className="absolute top-0 left-4 -translate-y-1/2 bg-navy px-2 text-[10px] font-mono text-ochre uppercase tracking-widest">
           Live Sentiment Telemetry
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center divide-y md:divide-y-0 md:divide-x divide-[#D3D4C0]/15 pt-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center divide-y md:divide-y-0 md:divide-x divide-sage/15 pt-2">
           {/* Support A */}
           <div className="p-2">
-            <span className="font-mono text-[10px] text-[#D3D4C0]/60 uppercase tracking-widest block mb-1">
+            <span className="font-mono text-[10px] text-sage/60 uppercase tracking-widest block mb-1">
               Alpha Support
             </span>
-            <span className="font-vampiro text-3xl text-[#F3E4C9]">
+            <span className="font-vampiro text-3xl text-cream">
               {endorsements.alphaPercent}%
             </span>
-            <p className="text-[10px] text-[#D3D4C0]/40 font-mono mt-1">({endorsements.alphaCount} votes)</p>
+            <p className="text-[10px] text-sage/40 font-mono mt-1">({endorsements.alphaCount} votes)</p>
           </div>
 
           {/* Support B */}
           <div className="p-2">
-            <span className="font-mono text-[10px] text-[#D3D4C0]/60 uppercase tracking-widest block mb-1">
+            <span className="font-mono text-[10px] text-sage/60 uppercase tracking-widest block mb-1">
               Beta Support
             </span>
-            <span className="font-vampiro text-3xl text-[#F3E4C9]">
+            <span className="font-vampiro text-3xl text-cream">
               {endorsements.betaPercent}%
             </span>
-            <p className="text-[10px] text-[#D3D4C0]/40 font-mono mt-1">({endorsements.betaCount} votes)</p>
+            <p className="text-[10px] text-sage/40 font-mono mt-1">({endorsements.betaCount} votes)</p>
           </div>
 
           {/* Margin error */}
           <div className="p-2">
-            <span className="font-mono text-[10px] text-[#D3D4C0]/60 uppercase tracking-widest block mb-1">
+            <span className="font-mono text-[10px] text-sage/60 uppercase tracking-widest block mb-1">
               Margin of Error
             </span>
-            <span className="font-vampiro text-3xl text-[#8B5E3C]">
+            <span className="font-vampiro text-3xl text-ochre">
               ± 2.1%
             </span>
-            <p className="text-[10px] text-[#D3D4C0]/40 font-mono mt-1">Permanent sample census</p>
+            <p className="text-[10px] text-sage/40 font-mono mt-1">Permanent sample census</p>
           </div>
         </div>
       </div>
 
       {/* Working AI Comparison Form Section */}
-      <div className="border border-[#D3D4C0]/25 bg-[#071D32]/50 rounded p-6">
+      <div className="border border-sage/25 bg-navy/50 rounded p-6">
         <div className="flex items-center space-x-2 mb-4">
-          <Sparkles className="w-4 h-4 text-[#8B5E3C]" />
+          <Sparkles className="w-4 h-4 text-ochre" />
           <h3 className="font-serif text-sm font-bold uppercase tracking-wider">
             Custom Project Parameter Evaluator (AI Synthesis)
           </h3>
@@ -267,13 +267,13 @@ export default function EvaluationEngine({ endorsements, onEndorse }: Evaluation
             onChange={(e) => setCustomPrompt(e.target.value)}
             placeholder="Type custom criteria (e.g., 'Weigh them considering youth unemployment surge and budget deficits')..."
             rows={3}
-            className="w-full bg-[#071D32] border border-[#D3D4C0]/20 rounded p-3 text-xs font-sans text-[#F3E4C9] outline-none focus:border-[#8B5E3C] resize-none"
+            className="w-full bg-navy border border-sage/20 rounded p-3 text-xs font-sans text-cream outline-none focus:border-ochre resize-none"
           ></textarea>
 
           <button
             type="submit"
             disabled={isAnalyzing || !customPrompt.trim()}
-            className="flex items-center space-x-2 px-5 py-2.5 bg-[#8B5E3C] disabled:bg-neutral-800 disabled:text-neutral-500 hover:bg-[#8B5E3C]/90 text-[#F3E4C9] rounded font-mono font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
+            className="flex items-center space-x-2 px-5 py-2.5 bg-ochre disabled:bg-neutral-800 disabled:text-neutral-500 hover:bg-ochre/90 text-cream rounded font-mono font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
           >
             {isAnalyzing ? (
               <>
@@ -287,7 +287,7 @@ export default function EvaluationEngine({ endorsements, onEndorse }: Evaluation
         </form>
 
         {customAnalysis && (
-          <div className="mt-4 p-4 border border-[#8B5E3C]/30 bg-[#8B5E3C]/10 rounded text-xs leading-relaxed font-mono">
+          <div className="mt-4 p-4 border border-ochre/30 bg-ochre/10 rounded text-xs leading-relaxed font-mono">
             {customAnalysis}
           </div>
         )}

@@ -1,23 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Vampiro+One&display=swap');
 @import "tailwindcss";
 
+:root {
+  --navy: #FCFAF6;          /* main panel background - originally #071D32 */
+  --navy-dark: #F4F1EA;     /* body background - originally #0A2947 */
+  --cream: #081E34;         /* text color - originally #F3E4C9 */
+  --sage: #4E5E6C;          /* border / secondary text color - originally #D3D4C0 */
+  --ochre: #8B5E3C;         /* brand accent brown - originally #8B5E3C */
+  --coral: #D05A3F;         /* orange accent - originally #D05A3F */
+}
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Playfair Display", "Cinzel", Georgia, serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   --font-vampiro: "Vampiro One", cursive;
   
-  --color-navy: #0A2947;
-  --color-cream: #F3E4C9;
-  --color-sage: #D3D4C0;
-  --color-ochre: #8B5E3C;
-  --color-coral: #D05A3F;
+  --color-navy: var(--navy);
+  --color-navy-dark: var(--navy-dark);
+  --color-cream: var(--cream);
+  --color-sage: var(--sage);
+  --color-ochre: var(--ochre);
+  --color-coral: var(--coral);
 }
 
 /* Base resets & styled scrollbar */
 html, body {
-  background-color: #0A2947;
-  color: #F3E4C9;
+  background-color: var(--navy-dark);
+  color: var(--cream);
   font-family: var(--font-sans);
   margin: 0;
   padding: 0;
@@ -29,14 +39,14 @@ html, body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0A2947;
+  background: var(--navy-dark);
 }
 ::-webkit-scrollbar-thumb {
-  background: #8B5E3C;
+  background: var(--ochre);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #D3D4C0;
+  background: var(--sage);
 }
 
 /* Pulsing and mapping effects */
@@ -44,12 +54,12 @@ html, body {
   0%, 100% {
     transform: scale(1);
     opacity: 0.8;
-    filter: drop-shadow(0 0 4px rgba(243, 228, 201, 0.6));
+    filter: drop-shadow(0 0 4px rgba(8, 30, 52, 0.2));
   }
   50% {
     transform: scale(1.3);
     opacity: 1;
-    filter: drop-shadow(0 0 12px rgba(139, 94, 60, 0.9));
+    filter: drop-shadow(0 0 12px rgba(139, 94, 60, 0.4));
   }
 }
 
@@ -59,7 +69,36 @@ html, body {
 
 /* Custom typewriter typing and visual grids */
 .grid-bg {
-  background-image: linear-gradient(rgba(211, 212, 192, 0.1) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(211, 212, 192, 0.1) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(78, 94, 108, 0.08) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(78, 94, 108, 0.08) 1px, transparent 1px);
   background-size: 20px 20px;
 }
+
+/* Accessibility contrast overrides for light theme on dark background blocks */
+.bg-ochre,
+.bg-coral,
+.bg-neutral-900,
+.bg-neutral-950,
+.bg-black\/10,
+.bg-black\/20,
+.bg-black\/30,
+.bg-black\/45,
+.hover\:bg-ochre:hover,
+.hover\:bg-coral:hover {
+  --color-cream: #FCFAF6 !important;
+  --color-sage: #E8E6DF !important;
+}
+
+/* Restore dark text colors for light layout backgrounds nested inside dark blocks */
+.bg-navy {
+  background-color: var(--color-navy) !important;
+  --color-cream: #081E34 !important;
+  --color-sage: #4E5E6C !important;
+}
+
+.bg-navy-dark {
+  background-color: var(--color-navy-dark) !important;
+  --color-cream: #081E34 !important;
+  --color-sage: #4E5E6C !important;
+}
+

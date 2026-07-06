@@ -116,17 +116,17 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#071D32] flex flex-col items-center justify-center p-6 text-[#F3E4C9] font-sans selection:bg-[#8B5E3C] selection:text-[#F3E4C9]">
+    <div className="min-h-screen bg-navy flex flex-col items-center justify-center p-6 text-cream font-sans selection:bg-ochre selection:text-cream">
       
       {/* Decorative Brand Header */}
       <div className="mb-8 text-center max-w-md">
-        <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#8B5E3C] bg-[#8B5E3C]/10 px-3 py-1 rounded-full border border-[#8B5E3C]/20 inline-block mb-3">
+        <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-ochre bg-ochre/10 px-3 py-1 rounded-full border border-ochre/20 inline-block mb-3">
           Authenticated Assembly Hub
         </span>
-        <h1 className="font-serif text-3xl md:text-4xl font-bold tracking-tight text-[#F3E4C9] uppercase">
+        <h1 className="font-serif text-3xl md:text-4xl font-bold tracking-tight text-cream uppercase">
           District Legislative Gate
         </h1>
-        <p className="text-[#D3D4C0] text-xs mt-2 font-light leading-relaxed">
+        <p className="text-sage text-xs mt-2 font-light leading-relaxed">
           Secure, verified node for Members of Parliament and Assembly Administrators. Check parameters, audit ledger logs, and endorse public initiatives.
         </p>
       </div>
@@ -134,22 +134,22 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
       <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         
         {/* Left column: Information & Roles Panel */}
-        <div className="lg:col-span-5 bg-black/20 border border-[#D3D4C0]/15 rounded p-8 flex flex-col justify-between space-y-8">
+        <div className="lg:col-span-5 bg-black/20 border border-sage/15 rounded p-8 flex flex-col justify-between space-y-8">
           <div>
-            <h2 className="font-serif text-xl font-bold text-[#F3E4C9] mb-4 uppercase tracking-wide border-b border-[#D3D4C0]/15 pb-2">
+            <h2 className="font-serif text-xl font-bold text-cream mb-4 uppercase tracking-wide border-b border-sage/15 pb-2">
               Assembly System Roles
             </h2>
             
             <div className="space-y-6">
               {/* MP Role Details */}
               <div className="space-y-2">
-                <div className="flex items-center space-x-2 text-[#8B5E3C]">
+                <div className="flex items-center space-x-2 text-ochre">
                   <Shield className="w-4 h-4" />
                   <h3 className="font-mono text-xs uppercase tracking-wider font-bold">
                     Member of Parliament (MP)
                   </h3>
                 </div>
-                <p className="text-[#D3D4C0]/80 text-xs font-light leading-relaxed pl-6">
+                <p className="text-sage/80 text-xs font-light leading-relaxed pl-6">
                   Assigned to represent individual districts. Empowered to submit verified local initiatives, vote on public proposals, and monitor constituent sentiments.
                 </p>
                 <div className="pl-6 flex flex-wrap gap-1.5 mt-1">
@@ -160,64 +160,64 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
 
               {/* Administrator Role Details */}
               <div className="space-y-2">
-                <div className="flex items-center space-x-2 text-[#D05A3F]">
+                <div className="flex items-center space-x-2 text-coral">
                   <Building2 className="w-4 h-4" />
                   <h3 className="font-mono text-xs uppercase tracking-wider font-bold">
                     Assembly Administrator
                   </h3>
                 </div>
-                <p className="text-[#D3D4C0]/80 text-xs font-light leading-relaxed pl-6">
+                <p className="text-sage/80 text-xs font-light leading-relaxed pl-6">
                   Regulates technical and physical state limits. Audits permanent immutable record entries, configures district-wide MFA and logging parameters, and updates archives.
                 </p>
                 <div className="pl-6 flex flex-wrap gap-1.5 mt-1">
-                  <span className="bg-[#D05A3F]/10 text-red-400 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-[#D05A3F]/20">Audit Records</span>
-                  <span className="bg-[#D05A3F]/10 text-red-400 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-[#D05A3F]/20">Configure Security</span>
+                  <span className="bg-coral/10 text-red-400 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-coral/20">Audit Records</span>
+                  <span className="bg-coral/10 text-red-400 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-coral/20">Configure Security</span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Quick-Access seed panel */}
-          <div className="bg-[#F3E4C9]/5 border border-[#D3D4C0]/10 rounded p-4 font-mono text-[11px] space-y-3">
-            <div className="flex items-center space-x-2 text-[#F3E4C9]">
-              <Key className="w-3.5 h-3.5 text-[#8B5E3C]" />
-              <span className="uppercase tracking-wider font-bold text-[#F3E4C9]/90">Legislative Seed Bypass</span>
+          <div className="bg-cream/5 border border-sage/10 rounded p-4 font-mono text-[11px] space-y-3">
+            <div className="flex items-center space-x-2 text-cream">
+              <Key className="w-3.5 h-3.5 text-ochre" />
+              <span className="uppercase tracking-wider font-bold text-cream/90">Legislative Seed Bypass</span>
             </div>
-            <p className="text-[#D3D4C0]/60 font-sans text-[10px] leading-relaxed">
+            <p className="text-sage/60 font-sans text-[10px] leading-relaxed">
               Use these pre-authorized accounts to immediately verify specific permission matrices:
             </p>
             <div className="grid grid-cols-2 gap-3 mt-1 text-center">
               <button 
                 onClick={() => fillSeedCredential("mp")}
-                className="py-2 px-3 bg-[#071D32] hover:bg-[#8B5E3C] text-[#F3E4C9] rounded border border-[#D3D4C0]/10 text-[10px] uppercase tracking-wide font-bold transition-all cursor-pointer"
+                className="py-2 px-3 bg-navy hover:bg-ochre text-cream rounded border border-sage/10 text-[10px] uppercase tracking-wide font-bold transition-all cursor-pointer"
               >
                 Sign In as MP
               </button>
               <button 
                 onClick={() => fillSeedCredential("admin")}
-                className="py-2 px-3 bg-[#071D32] hover:bg-[#D05A3F] text-[#F3E4C9] rounded border border-[#D3D4C0]/10 text-[10px] uppercase tracking-wide font-bold transition-all cursor-pointer"
+                className="py-2 px-3 bg-navy hover:bg-coral text-cream rounded border border-sage/10 text-[10px] uppercase tracking-wide font-bold transition-all cursor-pointer"
               >
                 Sign In as Admin
               </button>
             </div>
-            <div className="text-[10px] text-center text-[#D3D4C0]/40 font-mono">
-              Universal Password: <span className="text-[#F3E4C9]/70 font-bold">password123</span>
+            <div className="text-[10px] text-center text-sage/40 font-mono">
+              Universal Password: <span className="text-cream/70 font-bold">password123</span>
             </div>
           </div>
         </div>
 
         {/* Right column: Interactive Form Panel */}
-        <div className="lg:col-span-7 bg-[#F3E4C9] text-[#071D32] border border-[#D3D4C0] rounded p-8 shadow-2xl flex flex-col justify-between">
+        <div className="lg:col-span-7 bg-cream text-navy border border-sage rounded p-8 shadow-2xl flex flex-col justify-between">
           <div>
             {/* Header Tabs */}
-            <div className="flex border-b border-[#071D32]/10 mb-6">
+            <div className="flex border-b border-navy/10 mb-6">
               <button
                 type="button"
                 onClick={() => { setActiveTab("login"); setError(null); }}
                 className={`flex-1 pb-3 text-center font-mono text-xs uppercase tracking-widest font-bold border-b-2 transition-all cursor-pointer ${
                   activeTab === "login" 
-                    ? "border-[#071D32] text-[#071D32]" 
-                    : "border-transparent text-[#071D32]/40 hover:text-[#071D32]/70"
+                    ? "border-navy text-navy" 
+                    : "border-transparent text-navy/40 hover:text-navy/70"
                 }`}
               >
                 Secure Sign In
@@ -227,8 +227,8 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
                 onClick={() => { setActiveTab("signup"); setError(null); }}
                 className={`flex-1 pb-3 text-center font-mono text-xs uppercase tracking-widest font-bold border-b-2 transition-all cursor-pointer ${
                   activeTab === "signup" 
-                    ? "border-[#071D32] text-[#071D32]" 
-                    : "border-transparent text-[#071D32]/40 hover:text-[#071D32]/70"
+                    ? "border-navy text-navy" 
+                    : "border-transparent text-navy/40 hover:text-navy/70"
                 }`}
               >
                 Register Account
@@ -255,16 +255,16 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
               {/* Identity Name (Signup only) */}
               {activeTab === "signup" && (
                 <div className="space-y-1">
-                  <label className="font-mono text-[10px] text-[#071D32]/60 uppercase tracking-wider block">Full Identity Name</label>
+                  <label className="font-mono text-[10px] text-navy/60 uppercase tracking-wider block">Full Identity Name</label>
                   <div className="relative">
-                    <User className="absolute left-3 top-3 w-4 h-4 text-[#071D32]/40" />
+                    <User className="absolute left-3 top-3 w-4 h-4 text-navy/40" />
                     <input
                       type="text"
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g. Councilor Eleanor Vance"
-                      className="w-full bg-[#071D32]/5 border border-[#071D32]/15 rounded py-2.5 pl-10 pr-4 text-xs text-[#071D32] outline-none focus:border-[#8B5E3C] font-sans"
+                      className="w-full bg-navy/5 border border-navy/15 rounded py-2.5 pl-10 pr-4 text-xs text-navy outline-none focus:border-ochre font-sans"
                     />
                   </div>
                 </div>
@@ -272,16 +272,16 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
 
               {/* Email Address */}
               <div className="space-y-1">
-                <label className="font-mono text-[10px] text-[#071D32]/60 uppercase tracking-wider block">Authorized Email Address</label>
+                <label className="font-mono text-[10px] text-navy/60 uppercase tracking-wider block">Authorized Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 w-4 h-4 text-[#071D32]/40" />
+                  <Mail className="absolute left-3 top-3 w-4 h-4 text-navy/40" />
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="e.g. representative@assembly.gov"
-                    className="w-full bg-[#071D32]/5 border border-[#071D32]/15 rounded py-2.5 pl-10 pr-4 text-xs text-[#071D32] outline-none focus:border-[#8B5E3C] font-sans"
+                    className="w-full bg-navy/5 border border-navy/15 rounded py-2.5 pl-10 pr-4 text-xs text-navy outline-none focus:border-ochre font-sans"
                   />
                 </div>
               </div>
@@ -289,22 +289,22 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
               {/* Password */}
               <div className="space-y-1">
                 <div className="flex justify-between items-center">
-                  <label className="font-mono text-[10px] text-[#071D32]/60 uppercase tracking-wider block">Secured Password</label>
+                  <label className="font-mono text-[10px] text-navy/60 uppercase tracking-wider block">Secured Password</label>
                   {activeTab === "signup" && password.length > 0 && (
-                    <span className="text-[10px] font-mono font-bold text-[#8B5E3C]">
+                    <span className="text-[10px] font-mono font-bold text-ochre">
                       {passwordStrength.label}
                     </span>
                   )}
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-3 w-4 h-4 text-[#071D32]/40" />
+                  <Lock className="absolute left-3 top-3 w-4 h-4 text-navy/40" />
                   <input
                     type="password"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full bg-[#071D32]/5 border border-[#071D32]/15 rounded py-2.5 pl-10 pr-4 text-xs text-[#071D32] outline-none focus:border-[#8B5E3C] font-sans"
+                    className="w-full bg-navy/5 border border-navy/15 rounded py-2.5 pl-10 pr-4 text-xs text-navy outline-none focus:border-ochre font-sans"
                   />
                 </div>
 
@@ -323,11 +323,11 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
               {activeTab === "signup" && (
                 <div className="grid grid-cols-2 gap-4 pt-2">
                   <div className="space-y-1">
-                    <label className="font-mono text-[10px] text-[#071D32]/60 uppercase tracking-wider block">Designated Role</label>
+                    <label className="font-mono text-[10px] text-navy/60 uppercase tracking-wider block">Designated Role</label>
                     <select
                       value={role}
                       onChange={(e) => setRole(e.target.value as any)}
-                      className="w-full bg-[#071D32]/5 border border-[#071D32]/15 rounded px-2.5 py-2.5 text-xs text-[#071D32] outline-none font-mono tracking-wider cursor-pointer font-bold"
+                      className="w-full bg-navy/5 border border-navy/15 rounded px-2.5 py-2.5 text-xs text-navy outline-none font-mono tracking-wider cursor-pointer font-bold"
                     >
                       <option value="MP">MP (Representative)</option>
                       <option value="ADMINISTRATOR">Administrator</option>
@@ -337,31 +337,31 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
                   {/* Contextual Input (District for MP, Office for Admin) */}
                   {role === "MP" ? (
                     <div className="space-y-1">
-                      <label className="font-mono text-[10px] text-[#071D32]/60 uppercase tracking-wider block">Represented District</label>
+                      <label className="font-mono text-[10px] text-navy/60 uppercase tracking-wider block">Represented District</label>
                       <div className="relative">
-                        <Map className="absolute left-3 top-3 w-3.5 h-3.5 text-[#071D32]/40" />
+                        <Map className="absolute left-3 top-3 w-3.5 h-3.5 text-navy/40" />
                         <input
                           type="text"
                           required
                           value={districtId}
                           onChange={(e) => setDistrictId(e.target.value)}
                           placeholder="e.g. 74-B"
-                          className="w-full bg-[#071D32]/5 border border-[#071D32]/15 rounded py-2.5 pl-9 pr-4 text-xs text-[#071D32] outline-none focus:border-[#8B5E3C] font-mono font-bold uppercase"
+                          className="w-full bg-navy/5 border border-navy/15 rounded py-2.5 pl-9 pr-4 text-xs text-navy outline-none focus:border-ochre font-mono font-bold uppercase"
                         />
                       </div>
                     </div>
                   ) : (
                     <div className="space-y-1">
-                      <label className="font-mono text-[10px] text-[#071D32]/60 uppercase tracking-wider block">Assigned Office</label>
+                      <label className="font-mono text-[10px] text-navy/60 uppercase tracking-wider block">Assigned Office</label>
                       <div className="relative">
-                        <Building2 className="absolute left-3 top-3 w-3.5 h-3.5 text-[#071D32]/40" />
+                        <Building2 className="absolute left-3 top-3 w-3.5 h-3.5 text-navy/40" />
                         <input
                           type="text"
                           required
                           value={office}
                           onChange={(e) => setOffice(e.target.value)}
                           placeholder="e.g. Fiscal Auditing"
-                          className="w-full bg-[#071D32]/5 border border-[#071D32]/15 rounded py-2.5 pl-9 pr-4 text-xs text-[#071D32] outline-none focus:border-[#8B5E3C] font-sans"
+                          className="w-full bg-navy/5 border border-navy/15 rounded py-2.5 pl-9 pr-4 text-xs text-navy outline-none focus:border-ochre font-sans"
                         />
                       </div>
                     </div>
@@ -373,7 +373,7 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-6 py-3.5 bg-[#071D32] hover:bg-[#8B5E3C] text-[#F3E4C9] rounded font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-md cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-50"
+                className="w-full mt-6 py-3.5 bg-navy hover:bg-ochre text-cream rounded font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-md cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-50"
               >
                 <span>{loading ? "Authenticating Identity..." : activeTab === "login" ? "Verify Security Key" : "Secure Registration"}</span>
                 {!loading && <ArrowRight className="w-4 h-4" />}
@@ -383,8 +383,8 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
           </div>
 
           {/* Privacy Note */}
-          <div className="mt-8 pt-4 border-t border-[#071D32]/10 flex items-center space-x-2 text-[10px] text-[#071D32]/50 font-sans leading-relaxed">
-            <Info className="w-4 h-4 text-[#8B5E3C] shrink-0" />
+          <div className="mt-8 pt-4 border-t border-navy/10 flex items-center space-x-2 text-[10px] text-navy/50 font-sans leading-relaxed">
+            <Info className="w-4 h-4 text-ochre shrink-0" />
             <span>
               All legislative actions, logins, and settings updates are permanently audited into the district immutable timeline registries.
             </span>
@@ -398,7 +398,7 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
       <div className="mt-8">
         <button 
           onClick={() => setView("LANDING")}
-          className="text-xs font-mono uppercase tracking-widest text-[#D3D4C0] hover:text-[#F3E4C9] transition-all cursor-pointer underline underline-offset-4"
+          className="text-xs font-mono uppercase tracking-widest text-sage hover:text-cream transition-all cursor-pointer underline underline-offset-4"
         >
           Return to Portal Landing
         </button>

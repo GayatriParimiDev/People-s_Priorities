@@ -40,36 +40,36 @@ export default function Sidebar({
   ] as const;
 
   return (
-    <div className="w-64 bg-[#071D32] border-r border-[#D3D4C0]/25 flex flex-col h-screen sticky top-0 shrink-0 select-none z-30 shadow-2xl">
+    <div className="w-64 bg-navy border-r border-sage/25 flex flex-col h-screen sticky top-0 shrink-0 select-none z-30 shadow-2xl">
       {/* Top Profile / Office section */}
-      <div className="p-6 border-b border-[#D3D4C0]/15 flex items-center space-x-3 bg-gradient-to-b from-black/20 to-transparent">
+      <div className="p-6 border-b border-sage/15 flex items-center space-x-3 bg-gradient-to-b from-black/20 to-transparent">
         <div className="relative group cursor-pointer" onClick={() => setView(currentUser ? "SETTINGS" : "AUTH")}>
-          <div className="w-12 h-12 rounded overflow-hidden border-2 border-[#D3D4C0] hover:border-[#8B5E3C] transition-all duration-300 flex items-center justify-center bg-black/45">
+          <div className="w-12 h-12 rounded overflow-hidden border-2 border-sage hover:border-ochre transition-all duration-300 flex items-center justify-center bg-black/45">
             {currentUser ? (
-              <span className="font-serif font-bold text-base text-[#F3E4C9] uppercase">
+              <span className="font-serif font-bold text-base text-cream uppercase">
                 {currentUser.name.slice(0, 2)}
               </span>
             ) : (
-              <svg viewBox="0 0 100 100" className="w-full h-full bg-[#D3D4C0]">
+              <svg viewBox="0 0 100 100" className="w-full h-full bg-sage">
                 {/* Stylish SVG Avatar */}
-                <circle cx="50" cy="40" r="22" fill="#071D32" />
-                <path d="M15 88 C 15 65, 85 65, 85 88 Z" fill="#071D32" />
+                <circle cx="50" cy="40" r="22" fill="var(--color-navy)" />
+                <path d="M15 88 C 15 65, 85 65, 85 88 Z" fill="var(--color-navy)" />
               </svg>
             )}
           </div>
           {currentUser && (
-            <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#071D32] rounded-full"></span>
+            <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-navy rounded-full"></span>
           )}
         </div>
         <div className="flex-1 min-w-0">
           <h2 
-            className="text-[#F3E4C9] font-serif font-bold text-sm tracking-tight hover:text-[#8B5E3C] cursor-pointer transition-all truncate" 
+            className="text-cream font-serif font-bold text-sm tracking-tight hover:text-ochre cursor-pointer transition-all truncate" 
             onClick={() => setView(currentUser ? "SETTINGS" : "AUTH")}
           >
             {currentUser ? currentUser.name : "Secure Portal"}
           </h2>
           {currentUser ? (
-            <span className="inline-block text-[8px] font-mono uppercase bg-[#8B5E3C]/20 border border-[#8B5E3C]/40 text-[#D3D4C0] px-1.5 py-0.5 rounded leading-none mt-1 font-bold">
+            <span className="inline-block text-[8px] font-mono uppercase bg-ochre/20 border border-ochre/40 text-sage px-1.5 py-0.5 rounded leading-none mt-1 font-bold">
               {currentUser.role}
             </span>
           ) : (
@@ -89,7 +89,7 @@ export default function Sidebar({
         <button 
           onClick={onNewInitiative}
           id="btn-new-initiative"
-          className="w-full flex items-center justify-between px-4 py-3 bg-[#D05A3F] hover:bg-[#D05A3F]/90 text-[#F3E4C9] rounded font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-lg transform active:scale-[0.98] border border-[#F3E4C9]/10 cursor-pointer"
+          className="w-full flex items-center justify-between px-4 py-3 bg-coral hover:bg-coral/90 text-cream rounded font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-lg transform active:scale-[0.98] border border-cream/10 cursor-pointer"
         >
           <span>New Initiative</span>
           <Plus className="w-4 h-4" />
@@ -103,15 +103,15 @@ export default function Sidebar({
           onClick={() => setView("LANDING")}
           className={`w-full flex items-center space-x-3 px-4 py-3 rounded font-mono text-xs uppercase tracking-wider transition-all duration-250 cursor-pointer text-left ${
             currentView === "LANDING"
-              ? "bg-[#8B5E3C] text-[#F3E4C9] font-bold border-l-4 border-[#F3E4C9]"
-              : "text-[#D3D4C0] hover:bg-[#F3E4C9]/5 hover:text-[#F3E4C9]"
+              ? "bg-ochre text-cream font-bold border-l-4 border-cream"
+              : "text-sage hover:bg-cream/5 hover:text-cream"
           }`}
         >
           <Home className="w-4 h-4" />
           <span>Portal Home</span>
         </button>
 
-        <div className="h-[1px] bg-[#D3D4C0]/10 my-2"></div>
+        <div className="h-[1px] bg-sage/10 my-2"></div>
 
         {menuItems.map((item) => {
           const Icon = item.icon;
@@ -122,8 +122,8 @@ export default function Sidebar({
               onClick={() => setView(item.id)}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded font-mono text-xs uppercase tracking-wider transition-all duration-250 cursor-pointer text-left ${
                 isActive
-                  ? "bg-[#8B5E3C] text-[#F3E4C9] font-bold border-l-4 border-[#F3E4C9]"
-                  : "text-[#D3D4C0] hover:bg-[#F3E4C9]/5 hover:text-[#F3E4C9]"
+                  ? "bg-ochre text-cream font-bold border-l-4 border-cream"
+                  : "text-sage hover:bg-cream/5 hover:text-cream"
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -134,13 +134,13 @@ export default function Sidebar({
       </nav>
 
       {/* Bottom section: Settings & Support */}
-      <div className="p-4 border-t border-[#D3D4C0]/10 space-y-1">
+      <div className="p-4 border-t border-sage/10 space-y-1">
         <button
           onClick={() => setView("SETTINGS")}
           className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded font-mono text-xs uppercase tracking-wider transition-all cursor-pointer text-left ${
             currentView === "SETTINGS"
-              ? "bg-[#8B5E3C] text-[#F3E4C9]"
-              : "text-[#D3D4C0] hover:bg-[#F3E4C9]/5 hover:text-[#F3E4C9]"
+              ? "bg-ochre text-cream"
+              : "text-sage hover:bg-cream/5 hover:text-cream"
           }`}
         >
           <Settings className="w-4 h-4" />
@@ -158,8 +158,8 @@ export default function Sidebar({
       </div>
 
       {/* Tiny descriptive label at the bottom (humble copyright, no tech larping) */}
-      <div className="p-4 text-center border-t border-[#D3D4C0]/5 bg-black/10">
-        <span className="text-[9px] font-mono text-[#D3D4C0]/40 uppercase tracking-widest">
+      <div className="p-4 text-center border-t border-sage/5 bg-black/10">
+        <span className="text-[9px] font-mono text-sage/40 uppercase tracking-widest">
           District Ledger System
         </span>
       </div>

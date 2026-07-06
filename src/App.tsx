@@ -199,7 +199,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#071D32] text-[#F3E4C9]">
+    <div className="flex h-screen w-screen overflow-hidden bg-navy text-cream">
       {/* Global persistent Sidebar layout */}
       <Sidebar 
         currentView={currentView} 

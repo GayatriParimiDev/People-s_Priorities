@@ -151,36 +151,36 @@ export default function IntakeConsole({ onAddLedgerItem, setView }: IntakeConsol
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#071D32] text-[#F3E4C9] overflow-hidden">
+    <div className="flex flex-col min-h-screen bg-navy text-cream overflow-hidden">
       {/* Top Header Grid */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 relative min-h-[calc(100vh-60px)]">
         {/* Left Intake Console Side */}
-        <div className="p-8 md:p-14 flex flex-col justify-between border-r border-[#D3D4C0]/15 relative">
+        <div className="p-8 md:p-14 flex flex-col justify-between border-r border-sage/15 relative">
           <div className="max-w-xl w-full mx-auto space-y-8">
             <div>
-              <h1 className="font-vampiro text-5xl md:text-7xl leading-none text-[#F3E4C9] uppercase tracking-wide">
+              <h1 className="font-vampiro text-5xl md:text-7xl leading-none text-cream uppercase tracking-wide">
                 VOICE YOUR <br/>
-                <span className="text-[#8B5E3C]">VISION</span>
+                <span className="text-ochre">VISION</span>
               </h1>
-              <p className="text-[#D3D4C0] font-sans text-xs mt-4 tracking-wider leading-relaxed font-light">
+              <p className="text-sage font-sans text-xs mt-4 tracking-wider leading-relaxed font-light">
                 Log infrastructural concerns directly to the civic ledger.
                 Permanent record system active.
               </p>
             </div>
 
             {/* Input form container */}
-            <div className="border border-[#D3D4C0]/30 bg-[#071D32]/50 rounded p-6 backdrop-blur-sm relative">
-              <div className="absolute top-0 left-4 -translate-y-1/2 bg-[#071D32] px-2 text-[10px] font-mono text-[#8B5E3C] uppercase tracking-widest">
+            <div className="border border-sage/30 bg-navy/50 rounded p-6 backdrop-blur-sm relative">
+              <div className="absolute top-0 left-4 -translate-y-1/2 bg-navy px-2 text-[10px] font-mono text-ochre uppercase tracking-widest">
                 Input Console // Active
               </div>
 
               {/* Tabs selector */}
-              <div className="flex items-center space-x-6 border-b border-[#D3D4C0]/20 pb-4 mb-6">
+              <div className="flex items-center space-x-6 border-b border-sage/20 pb-4 mb-6">
                 <button
                   type="button"
                   onClick={() => { setActiveTab("TEXT"); setPhotoPreview(null); }}
                   className={`flex items-center space-x-2 font-mono text-xs uppercase tracking-wider cursor-pointer pb-2 -mb-[17px] border-b-2 transition-all ${
-                    activeTab === "TEXT" ? "border-[#8B5E3C] text-[#F3E4C9]" : "border-transparent text-[#D3D4C0]/50"
+                    activeTab === "TEXT" ? "border-ochre text-cream" : "border-transparent text-sage/50"
                   }`}
                 >
                   <Send className="w-3.5 h-3.5" />
@@ -190,7 +190,7 @@ export default function IntakeConsole({ onAddLedgerItem, setView }: IntakeConsol
                   type="button"
                   onClick={() => { setActiveTab("VOICE"); setPhotoPreview(null); }}
                   className={`flex items-center space-x-2 font-mono text-xs uppercase tracking-wider cursor-pointer pb-2 -mb-[17px] border-b-2 transition-all ${
-                    activeTab === "VOICE" ? "border-[#8B5E3C] text-[#F3E4C9]" : "border-transparent text-[#D3D4C0]/50"
+                    activeTab === "VOICE" ? "border-ochre text-cream" : "border-transparent text-sage/50"
                   }`}
                 >
                   <Mic className="w-3.5 h-3.5" />
@@ -200,7 +200,7 @@ export default function IntakeConsole({ onAddLedgerItem, setView }: IntakeConsol
                   type="button"
                   onClick={() => setActiveTab("PHOTO")}
                   className={`flex items-center space-x-2 font-mono text-xs uppercase tracking-wider cursor-pointer pb-2 -mb-[17px] border-b-2 transition-all ${
-                    activeTab === "PHOTO" ? "border-[#8B5E3C] text-[#F3E4C9]" : "border-transparent text-[#D3D4C0]/50"
+                    activeTab === "PHOTO" ? "border-ochre text-cream" : "border-transparent text-sage/50"
                   }`}
                 >
                   <ImageIcon className="w-3.5 h-3.5" />
@@ -211,10 +211,10 @@ export default function IntakeConsole({ onAddLedgerItem, setView }: IntakeConsol
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Condition rendering based on tab */}
                 {activeTab === "VOICE" && (
-                  <div className="flex items-center justify-between p-4 bg-[#8B5E3C]/10 border border-[#8B5E3C]/30 rounded">
+                  <div className="flex items-center justify-between p-4 bg-ochre/10 border border-ochre/30 rounded">
                     <div className="flex items-center space-x-3">
                       <div className={`w-3 h-3 rounded-full ${isRecording ? "bg-red-500 animate-ping" : "bg-red-500/40"}`}></div>
-                      <span className="font-mono text-xs text-[#D3D4C0]">
+                      <span className="font-mono text-xs text-sage">
                         {isRecording ? "TRANSCRIBING AUDIO LIVE..." : "MICROPHONE STANDBY"}
                       </span>
                     </div>
@@ -222,7 +222,7 @@ export default function IntakeConsole({ onAddLedgerItem, setView }: IntakeConsol
                       type="button"
                       onClick={handleMicToggle}
                       className={`p-2.5 rounded-full ${
-                        isRecording ? "bg-red-600 text-white" : "bg-[#8B5E3C] text-[#F3E4C9]"
+                        isRecording ? "bg-red-600 text-white" : "bg-ochre text-cream"
                       } hover:scale-105 transition-all cursor-pointer`}
                       title="Toggle Microphone"
                     >
@@ -233,9 +233,9 @@ export default function IntakeConsole({ onAddLedgerItem, setView }: IntakeConsol
 
                 {activeTab === "PHOTO" && (
                   <div className="space-y-3">
-                    <div className="border-2 border-dashed border-[#D3D4C0]/20 rounded-lg p-4 flex flex-col items-center justify-center bg-[#071D32]/30 hover:border-[#8B5E3C]/50 transition-colors relative">
+                    <div className="border-2 border-dashed border-sage/20 rounded-lg p-4 flex flex-col items-center justify-center bg-navy/30 hover:border-ochre/50 transition-colors relative">
                       {photoPreview ? (
-                        <div className="relative w-full aspect-video rounded overflow-hidden border border-[#D3D4C0]/20">
+                        <div className="relative w-full aspect-video rounded overflow-hidden border border-sage/20">
                           <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                           <button
                             type="button"
@@ -247,38 +247,38 @@ export default function IntakeConsole({ onAddLedgerItem, setView }: IntakeConsol
                         </div>
                       ) : (
                         <div className="text-center py-4">
-                          <Camera className="w-8 h-8 text-[#D3D4C0]/40 mx-auto mb-2" />
-                          <label className="cursor-pointer font-mono text-xs text-[#8B5E3C] hover:underline block mb-1">
+                          <Camera className="w-8 h-8 text-sage/40 mx-auto mb-2" />
+                          <label className="cursor-pointer font-mono text-xs text-ochre hover:underline block mb-1">
                             <span>Upload Local Photo</span>
                             <input type="file" accept="image/*" onChange={handlePhotoSelect} className="hidden" />
                           </label>
-                          <p className="text-[10px] text-[#D3D4C0]/50 font-sans">PNG, JPG up to 5MB</p>
+                          <p className="text-[10px] text-sage/50 font-sans">PNG, JPG up to 5MB</p>
                         </div>
                       )}
                     </div>
 
                     {!photoPreview && (
                       <div className="flex flex-col space-y-1">
-                        <span className="font-mono text-[10px] text-[#D3D4C0]/60">OR SELECT MOCK PHOTO REPORT:</span>
+                        <span className="font-mono text-[10px] text-sage/60">OR SELECT MOCK PHOTO REPORT:</span>
                         <div className="grid grid-cols-3 gap-2">
                           <button
                             type="button"
                             onClick={() => handleSimulatePhoto("pothole")}
-                            className="text-[10px] font-mono py-1.5 px-2 border border-[#D3D4C0]/20 hover:border-[#8B5E3C] rounded bg-[#071D32] hover:bg-[#8B5E3C]/10 cursor-pointer text-left truncate"
+                            className="text-[10px] font-mono py-1.5 px-2 border border-sage/20 hover:border-ochre rounded bg-navy hover:bg-ochre/10 cursor-pointer text-left truncate"
                           >
                             Pothole Repair
                           </button>
                           <button
                             type="button"
                             onClick={() => handleSimulatePhoto("light")}
-                            className="text-[10px] font-mono py-1.5 px-2 border border-[#D3D4C0]/20 hover:border-[#8B5E3C] rounded bg-[#071D32] hover:bg-[#8B5E3C]/10 cursor-pointer text-left truncate"
+                            className="text-[10px] font-mono py-1.5 px-2 border border-sage/20 hover:border-ochre rounded bg-navy hover:bg-ochre/10 cursor-pointer text-left truncate"
                           >
                             Broken Lamp
                           </button>
                           <button
                             type="button"
                             onClick={() => handleSimulatePhoto("water")}
-                            className="text-[10px] font-mono py-1.5 px-2 border border-[#D3D4C0]/20 hover:border-[#8B5E3C] rounded bg-[#071D32] hover:bg-[#8B5E3C]/10 cursor-pointer text-left truncate"
+                            className="text-[10px] font-mono py-1.5 px-2 border border-sage/20 hover:border-ochre rounded bg-navy hover:bg-ochre/10 cursor-pointer text-left truncate"
                           >
                             Pipe Burst
                           </button>
@@ -288,12 +288,12 @@ export default function IntakeConsole({ onAddLedgerItem, setView }: IntakeConsol
 
                     {photoPreview && (
                       <div className="space-y-1">
-                        <label className="font-mono text-[10px] text-[#D3D4C0]">AI Visual Details Tag:</label>
+                        <label className="font-mono text-[10px] text-sage">AI Visual Details Tag:</label>
                         <input
                           type="text"
                           value={photoDescription}
                           onChange={(e) => setPhotoDescription(e.target.value)}
-                          className="w-full bg-[#071D32] border border-[#D3D4C0]/20 rounded p-2 text-xs font-sans text-[#F3E4C9] outline-none focus:border-[#8B5E3C]"
+                          className="w-full bg-navy border border-sage/20 rounded p-2 text-xs font-sans text-cream outline-none focus:border-ochre"
                         />
                       </div>
                     )}
@@ -302,7 +302,7 @@ export default function IntakeConsole({ onAddLedgerItem, setView }: IntakeConsol
 
                 {/* Text area */}
                 <div className="space-y-1">
-                  <label className="font-mono text-[10px] text-[#D3D4C0]/60">CONSTITUENT REPRESENTATION / STATEMENT:</label>
+                  <label className="font-mono text-[10px] text-sage/60">CONSTITUENT REPRESENTATION / STATEMENT:</label>
                   <textarea
                     rows={4}
                     value={inputText}
@@ -314,25 +314,25 @@ export default function IntakeConsole({ onAddLedgerItem, setView }: IntakeConsol
                         ? "Click the microphone button to dictate details..."
                         : "Describe the uploaded visual issue..."
                     }
-                    className="w-full bg-[#071D32] border border-[#D3D4C0]/20 rounded p-3 text-xs font-sans text-[#F3E4C9] outline-none focus:border-[#8B5E3C] resize-none"
+                    className="w-full bg-navy border border-sage/20 rounded p-3 text-xs font-sans text-cream outline-none focus:border-ochre resize-none"
                   ></textarea>
                 </div>
 
                 {/* Submit row */}
-                <div className="flex items-center justify-between pt-2 border-t border-[#D3D4C0]/15">
-                  <div className="flex items-center space-x-2 text-xs font-mono text-[#D3D4C0]/60">
-                    <MapPin className="w-3.5 h-3.5 text-[#8B5E3C]" />
+                <div className="flex items-center justify-between pt-2 border-t border-sage/15">
+                  <div className="flex items-center space-x-2 text-xs font-mono text-sage/60">
+                    <MapPin className="w-3.5 h-3.5 text-ochre" />
                     <span className="text-[10px]">{locationStr}</span>
                   </div>
 
                   <button
                     type="submit"
                     disabled={isSubmitting || !inputText.trim()}
-                    className="flex items-center space-x-2 px-6 py-3 bg-[#8B5E3C] disabled:bg-neutral-800 disabled:text-neutral-500 hover:bg-[#8B5E3C]/90 text-[#F3E4C9] rounded font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow shadow-black/40 transform active:scale-95 cursor-pointer"
+                    className="flex items-center space-x-2 px-6 py-3 bg-ochre disabled:bg-neutral-800 disabled:text-neutral-500 hover:bg-ochre/90 text-cream rounded font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow shadow-black/40 transform active:scale-95 cursor-pointer"
                   >
                     {isSubmitting ? (
                       <>
-                        <Loader2 className="w-3.5 h-3.5 animate-spin text-[#F3E4C9]" />
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-cream" />
                         <span>Processing...</span>
                       </>
                     ) : (
@@ -354,13 +354,13 @@ export default function IntakeConsole({ onAddLedgerItem, setView }: IntakeConsol
                     <span>AI Analysis Complete // Added to Ledger</span>
                     <span>{submittedItem.id}</span>
                   </div>
-                  <h4 className="font-serif font-bold text-sm text-[#F3E4C9]">{submittedItem.title}</h4>
-                  <p className="text-[#D3D4C0] font-sans font-light leading-relaxed text-[11px]">
-                    Successfully categorized under <strong className="text-[#8B5E3C]">{submittedItem.theme}</strong> with a <strong className="text-[#D05A3F]">{submittedItem.priorityLevel}</strong> priority rank.
+                  <h4 className="font-serif font-bold text-sm text-cream">{submittedItem.title}</h4>
+                  <p className="text-sage font-sans font-light leading-relaxed text-[11px]">
+                    Successfully categorized under <strong className="text-ochre">{submittedItem.theme}</strong> with a <strong className="text-coral">{submittedItem.priorityLevel}</strong> priority rank.
                   </p>
                   <div className="flex space-x-4 pt-1">
                     <button onClick={() => setView("LEDGER")} className="font-mono text-[10px] text-emerald-400 hover:underline">View Public Ledger →</button>
-                    <button onClick={() => setView("DASHBOARD")} className="font-mono text-[10px] text-[#D3D4C0] hover:underline">View Map Hotspots →</button>
+                    <button onClick={() => setView("DASHBOARD")} className="font-mono text-[10px] text-sage hover:underline">View Map Hotspots →</button>
                   </div>
                 </div>
               </div>
@@ -369,33 +369,33 @@ export default function IntakeConsole({ onAddLedgerItem, setView }: IntakeConsol
         </div>
 
         {/* Right Frame Side (Brutalist Concrete Graphic Overlaid) */}
-        <div className="relative bg-neutral-900 border-t lg:border-t-0 lg:border-l border-[#D3D4C0]/20 flex flex-col justify-end p-8 md:p-12 overflow-hidden select-none min-h-[350px]">
+        <div className="relative bg-neutral-900 border-t lg:border-t-0 lg:border-l border-sage/20 flex flex-col justify-end p-8 md:p-12 overflow-hidden select-none min-h-[350px]">
           {/* Brutalist image placeholder */}
-          <div className="absolute inset-0 bg-[#071D32]/35 mix-blend-multiply z-10 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-navy/35 mix-blend-multiply z-10 pointer-events-none"></div>
           
           {/* Aesthetic grid overlay */}
           <div className="absolute inset-0 grid-bg opacity-40 z-0"></div>
 
           {/* Concrete structure SVG Artwork */}
           <svg viewBox="0 0 800 600" className="absolute inset-0 w-full h-full object-cover opacity-25">
-            <line x1="0" y1="50" x2="800" y2="550" stroke="#D3D4C0" strokeWidth="0.5"/>
-            <line x1="800" y1="50" x2="0" y2="550" stroke="#D3D4C0" strokeWidth="0.5"/>
-            <polygon points="150,80 650,80 650,420 150,420" fill="none" stroke="#D3D4C0" strokeWidth="1"/>
-            <polygon points="180,110 620,110 620,390 180,390" fill="none" stroke="#D3D4C0" strokeWidth="0.5" strokeDasharray="3 3"/>
-            <rect x="250" y="160" width="300" height="180" fill="none" stroke="#8B5E3C" strokeWidth="2"/>
-            <line x1="250" y1="250" x2="550" y2="250" stroke="#8B5E3C" strokeWidth="1" strokeDasharray="5 5"/>
+            <line x1="0" y1="50" x2="800" y2="550" stroke="var(--color-sage)" strokeWidth="0.5"/>
+            <line x1="800" y1="50" x2="0" y2="550" stroke="var(--color-sage)" strokeWidth="0.5"/>
+            <polygon points="150,80 650,80 650,420 150,420" fill="none" stroke="var(--color-sage)" strokeWidth="1"/>
+            <polygon points="180,110 620,110 620,390 180,390" fill="none" stroke="var(--color-sage)" strokeWidth="0.5" strokeDasharray="3 3"/>
+            <rect x="250" y="160" width="300" height="180" fill="none" stroke="var(--color-ochre)" strokeWidth="2"/>
+            <line x1="250" y1="250" x2="550" y2="250" stroke="var(--color-ochre)" strokeWidth="1" strokeDasharray="5 5"/>
           </svg>
 
           {/* Corner structural bracket markers */}
-          <span className="absolute bottom-12 left-12 font-mono text-xl text-[#D3D4C0]/30 select-none">L</span>
-          <span className="absolute top-12 right-12 font-mono text-xl text-[#D3D4C0]/30 select-none">⏊</span>
+          <span className="absolute bottom-12 left-12 font-mono text-xl text-sage/30 select-none">L</span>
+          <span className="absolute top-12 right-12 font-mono text-xl text-sage/30 select-none">⏊</span>
 
           {/* System status readout */}
           <div className="relative z-10 text-right">
-            <p className="font-serif italic text-sm text-[#F3E4C9] mb-1">
+            <p className="font-serif italic text-sm text-cream mb-1">
               "To prioritize development is to empower citizens."
             </p>
-            <span className="font-mono text-[9px] text-[#D3D4C0]/50 uppercase tracking-widest">
+            <span className="font-mono text-[9px] text-sage/50 uppercase tracking-widest">
               District Intake Assembly Protocol
             </span>
           </div>
@@ -403,12 +403,12 @@ export default function IntakeConsole({ onAddLedgerItem, setView }: IntakeConsol
       </div>
 
       {/* Footer bar */}
-      <footer className="h-16 bg-[#071D32] border-t border-[#D3D4C0]/15 px-8 flex items-center justify-between font-mono text-[10px] text-[#D3D4C0]/50 select-none shrink-0">
+      <footer className="h-16 bg-navy border-t border-sage/15 px-8 flex items-center justify-between font-mono text-[10px] text-sage/50 select-none shrink-0">
         <span>© 2026 INFRASTRUCTURAL AUTHORITY. PERMANENT RECORD SYSTEM.</span>
         <div className="flex space-x-6">
-          <button onClick={() => setView("SETTINGS")} className="hover:text-[#F3E4C9] transition-colors">Privacy Protocol</button>
-          <button onClick={() => setView("LEDGER")} className="hover:text-[#F3E4C9] transition-colors">Public Ledger</button>
-          <button onClick={() => setView("SETTINGS")} className="hover:text-[#F3E4C9] transition-colors">Accessibility</button>
+          <button onClick={() => setView("SETTINGS")} className="hover:text-cream transition-colors">Privacy Protocol</button>
+          <button onClick={() => setView("LEDGER")} className="hover:text-cream transition-colors">Public Ledger</button>
+          <button onClick={() => setView("SETTINGS")} className="hover:text-cream transition-colors">Accessibility</button>
         </div>
       </footer>
     </div>

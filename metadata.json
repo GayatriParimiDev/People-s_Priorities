@@ -1,0 +1,6 @@
+{
+  "name": "People's Priorities",
+  "description": "AI for Constituency Development Planning",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

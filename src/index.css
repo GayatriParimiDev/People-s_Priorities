@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Vampiro+One&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", "Cinzel", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-vampiro: "Vampiro One", cursive;
+  
+  --color-navy: #0A2947;
+  --color-cream: #F3E4C9;
+  --color-sage: #D3D4C0;
+  --color-ochre: #8B5E3C;
+  --color-coral: #D05A3F;
+}
+
+/* Base resets & styled scrollbar */
+html, body {
+  background-color: #0A2947;
+  color: #F3E4C9;
+  font-family: var(--font-sans);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0A2947;
+}
+::-webkit-scrollbar-thumb {
+  background: #8B5E3C;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D3D4C0;
+}
+
+/* Pulsing and mapping effects */
+@keyframes pulseGlow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+    filter: drop-shadow(0 0 4px rgba(243, 228, 201, 0.6));
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+    filter: drop-shadow(0 0 12px rgba(139, 94, 60, 0.9));
+  }
+}
+
+.map-point-pulse {
+  animation: pulseGlow 2s infinite ease-in-out;
+}
+
+/* Custom typewriter typing and visual grids */
+.grid-bg {
+  background-image: linear-gradient(rgba(211, 212, 192, 0.1) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(211, 212, 192, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}

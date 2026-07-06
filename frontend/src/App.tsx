@@ -20,12 +20,15 @@ export default function App() {
       const path = window.location.pathname;
       if (path === "/dashboard") {
         const hasClicked = sessionStorage.getItem("cta_clicked");
-        if (hasClicked) {
+        const token = localStorage.getItem("auth_token");
+        if (hasClicked || token) {
           setView("DASHBOARD");
         } else {
-          window.history.replaceState({}, "", "/");
-          setView("LANDING");
+          window.history.replaceState({}, "", "/login");
+          setView("AUTH");
         }
+      } else if (path === "/login") {
+        setView("AUTH");
       } else if (path === "/") {
         setView("LANDING");
       }
@@ -38,11 +41,12 @@ export default function App() {
   }, []);
 
   const handleLandingNavigate = (view: ViewState) => {
-    if (view === "INTAKE") {
-      sessionStorage.setItem("cta_clicked", "true");
-      window.history.pushState({}, "", "/dashboard");
-    } else if (view === "LANDING") {
+    if (view === "LANDING") {
       window.history.pushState({}, "", "/");
+    } else if (view === "AUTH") {
+      window.history.pushState({}, "", "/login");
+    } else {
+      window.history.pushState({}, "", "/dashboard");
     }
     setView(view);
   };
@@ -50,23 +54,36 @@ export default function App() {
   const handleGeneralNavigate = (view: ViewState) => {
     if (view === "LANDING") {
       window.history.pushState({}, "", "/");
+    } else if (view === "AUTH") {
+      window.history.pushState({}, "", "/login");
     } else {
-      const hasClicked = sessionStorage.getItem("cta_clicked");
-      if (hasClicked) {
-        window.history.pushState({}, "", "/dashboard");
-      }
+      window.history.pushState({}, "", "/dashboard");
     }
     setView(view);
   };
 
   // User Authentication State
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // Try to restore user session on initial boot
   useEffect(() => {
+    // Check if token exists in URL search params (e.g. from Google login callback redirect)
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get("token");
+    if (urlToken) {
+      localStorage.setItem("auth_token", urlToken);
+      sessionStorage.setItem("cta_clicked", "true");
+      window.history.replaceState({}, "", "/dashboard");
+      setView("DASHBOARD");
+    }
+
     async function restoreSession() {
       const token = localStorage.getItem("auth_token");
-      if (!token) return;
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
       try {
         const res = await fetch("/api/auth/me", {
@@ -92,10 +109,21 @@ export default function App() {
         }
       } catch (err) {
         console.error("Assembly security gateway connection exception", err);
+      } finally {
+        setLoading(false);
       }
     }
     restoreSession();
   }, []);
+
+  // Redirect to AUTH if trying to access dashboard/admin views without login
+  useEffect(() => {
+    if (!loading && !currentUser && currentView !== "LANDING" && currentView !== "AUTH") {
+      window.history.replaceState({}, "", "/login");
+      setView("AUTH");
+    }
+  }, [loading, currentUser, currentView]);
+
 
   const handleLoginSuccess = (user: User, token: string) => {
     setCurrentUser(user);
@@ -234,12 +262,27 @@ export default function App() {
     handleGeneralNavigate("INTAKE");
   };
 
+  // Render loading screen during initial session verification
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-navy flex flex-col items-center justify-center text-cream font-sans">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-ochre"></div>
+        <p className="mt-4 text-xs font-mono tracking-widest text-sage uppercase">Securing Legislative Gateway...</p>
+      </div>
+    );
+  }
+
   // Render Layouts: Landing vs Administrative Dashboard Frame
   if (currentView === "LANDING") {
     return <PublicLanding setView={handleLandingNavigate} ledger={ledger} />;
   }
 
   if (currentView === "AUTH") {
+    return <AuthView setView={handleGeneralNavigate} onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  // Enforce session login requirement for all administrative pages
+  if (!currentUser) {
     return <AuthView setView={handleGeneralNavigate} onLoginSuccess={handleLoginSuccess} />;
   }
 

@@ -103,13 +103,17 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
   };
 
   // Quick fill seed accounts
-  const fillSeedCredential = (type: "mp" | "admin") => {
+  const fillSeedCredential = (type: "mp" | "admin" | "citizen") => {
     if (type === "mp") {
       setEmail("mp@assembly.gov");
       setPassword("password123");
       setActiveTab("login");
-    } else {
+    } else if (type === "admin") {
       setEmail("admin@assembly.gov");
+      setPassword("password123");
+      setActiveTab("login");
+    } else {
+      setEmail("citizen@assembly.gov");
       setPassword("password123");
       setActiveTab("login");
     }
@@ -133,75 +137,98 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
 
       <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         
-        {/* Left column: Information & Roles Panel */}
-        <div className="lg:col-span-5 bg-black/20 border border-sage/15 rounded p-8 flex flex-col justify-between space-y-8">
+        {/* Left column: Information & Roles Panel (Light Theme styled) */}
+        <div className="lg:col-span-5 bg-navy text-cream border border-sage/40 rounded p-8 flex flex-col justify-between space-y-8 shadow-2xl">
           <div>
-            <h2 className="font-serif text-xl font-bold text-cream mb-4 uppercase tracking-wide border-b border-sage/15 pb-2">
+            <h2 className="font-serif text-xl font-bold text-cream mb-4 uppercase tracking-wide border-b border-cream/10 pb-2">
               Assembly System Roles
             </h2>
             
-            <div className="space-y-6">
+            <div className="space-y-5">
               {/* MP Role Details */}
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <div className="flex items-center space-x-2 text-ochre">
-                  <Shield className="w-4 h-4" />
-                  <h3 className="font-mono text-xs uppercase tracking-wider font-bold">
+                  <Shield className="w-4 h-4 text-amber-700" />
+                  <h3 className="font-mono text-xs uppercase tracking-wider font-bold text-cream">
                     Member of Parliament (MP)
                   </h3>
                 </div>
-                <p className="text-sage/80 text-xs font-light leading-relaxed pl-6">
+                <p className="text-cream/70 text-xs font-light leading-relaxed pl-6">
                   Assigned to represent individual districts. Empowered to submit verified local initiatives, vote on public proposals, and monitor constituent sentiments.
                 </p>
                 <div className="pl-6 flex flex-wrap gap-1.5 mt-1">
-                  <span className="bg-emerald-500/10 text-emerald-400 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-emerald-500/20">Endorse Proposals</span>
-                  <span className="bg-emerald-500/10 text-emerald-400 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-emerald-500/20">Submit Initiatives</span>
+                  <span className="bg-amber-100 text-amber-800 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-amber-200">Endorse Proposals</span>
+                  <span className="bg-amber-100 text-amber-800 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-amber-200">Submit Initiatives</span>
                 </div>
               </div>
 
               {/* Administrator Role Details */}
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <div className="flex items-center space-x-2 text-coral">
-                  <Building2 className="w-4 h-4" />
-                  <h3 className="font-mono text-xs uppercase tracking-wider font-bold">
+                  <Building2 className="w-4 h-4 text-red-700" />
+                  <h3 className="font-mono text-xs uppercase tracking-wider font-bold text-cream">
                     Assembly Administrator
                   </h3>
                 </div>
-                <p className="text-sage/80 text-xs font-light leading-relaxed pl-6">
+                <p className="text-cream/70 text-xs font-light leading-relaxed pl-6">
                   Regulates technical and physical state limits. Audits permanent immutable record entries, configures district-wide MFA and logging parameters, and updates archives.
                 </p>
                 <div className="pl-6 flex flex-wrap gap-1.5 mt-1">
-                  <span className="bg-coral/10 text-red-400 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-coral/20">Audit Records</span>
-                  <span className="bg-coral/10 text-red-400 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-coral/20">Configure Security</span>
+                  <span className="bg-red-100 text-red-800 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-red-200">Audit Records</span>
+                  <span className="bg-red-100 text-red-800 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-red-200">Configure Security</span>
+                </div>
+              </div>
+
+              {/* Citizen / User Role Details */}
+              <div className="space-y-1">
+                <div className="flex items-center space-x-2 text-indigo-600">
+                  <User className="w-4 h-4 text-indigo-700" />
+                  <h3 className="font-mono text-xs uppercase tracking-wider font-bold text-cream">
+                    Citizen / Public User
+                  </h3>
+                </div>
+                <p className="text-cream/70 text-xs font-light leading-relaxed pl-6">
+                  Standard constituents who can check personal engagement metrics, submit new legislative suggestions, and track their participation score.
+                </p>
+                <div className="pl-6 flex flex-wrap gap-1.5 mt-1">
+                  <span className="bg-indigo-100 text-indigo-800 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-indigo-200">Submit Suggestions</span>
+                  <span className="bg-indigo-100 text-indigo-800 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-indigo-200">Track Engagement</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Quick-Access seed panel */}
-          <div className="bg-cream/5 border border-sage/10 rounded p-4 font-mono text-[11px] space-y-3">
+          {/* Quick-Access seed panel (Light Theme styled) */}
+          <div className="bg-cream/5 border border-cream/10 rounded p-4 font-mono text-[11px] space-y-3">
             <div className="flex items-center space-x-2 text-cream">
-              <Key className="w-3.5 h-3.5 text-ochre" />
-              <span className="uppercase tracking-wider font-bold text-cream/90">Legislative Seed Bypass</span>
+              <Key className="w-3.5 h-3.5 text-amber-700" />
+              <span className="uppercase tracking-wider font-bold text-cream">Legislative Seed Bypass</span>
             </div>
-            <p className="text-sage/60 font-sans text-[10px] leading-relaxed">
+            <p className="text-cream/60 font-sans text-[10px] leading-relaxed">
               Use these pre-authorized accounts to immediately verify specific permission matrices:
             </p>
-            <div className="grid grid-cols-2 gap-3 mt-1 text-center">
+            <div className="grid grid-cols-3 gap-2 mt-1 text-center">
               <button 
                 onClick={() => fillSeedCredential("mp")}
-                className="py-2 px-3 bg-navy hover:bg-ochre text-cream rounded border border-sage/10 text-[10px] uppercase tracking-wide font-bold transition-all cursor-pointer"
+                className="py-2 px-1 bg-cream hover:bg-ochre text-navy rounded border border-cream/15 text-[10px] uppercase tracking-wide font-bold transition-all cursor-pointer font-sans"
               >
-                Sign In as MP
+                Sign In MP
               </button>
               <button 
                 onClick={() => fillSeedCredential("admin")}
-                className="py-2 px-3 bg-navy hover:bg-coral text-cream rounded border border-sage/10 text-[10px] uppercase tracking-wide font-bold transition-all cursor-pointer"
+                className="py-2 px-1 bg-cream hover:bg-coral text-navy rounded border border-cream/15 text-[10px] uppercase tracking-wide font-bold transition-all cursor-pointer font-sans"
               >
-                Sign In as Admin
+                Sign In Admin
+              </button>
+              <button 
+                onClick={() => fillSeedCredential("citizen")}
+                className="py-2 px-1 bg-cream hover:bg-indigo-600 text-navy rounded border border-cream/15 text-[10px] uppercase tracking-wide font-bold transition-all cursor-pointer font-sans"
+              >
+                Sign Citizen
               </button>
             </div>
-            <div className="text-[10px] text-center text-sage/40 font-mono">
-              Universal Password: <span className="text-cream/70 font-bold">password123</span>
+            <div className="text-[10px] text-center text-cream/50 font-mono">
+              Universal Password: <span className="text-cream/80 font-bold">password123</span>
             </div>
           </div>
         </div>
@@ -378,6 +405,25 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
                 <span>{loading ? "Authenticating Identity..." : activeTab === "login" ? "Verify Security Key" : "Secure Registration"}</span>
                 {!loading && <ArrowRight className="w-4 h-4" />}
               </button>
+
+              {/* Google Login button for users */}
+              {activeTab === "login" && (
+                <>
+                  <div className="relative flex py-4 items-center">
+                    <div className="flex-grow border-t border-cream/10"></div>
+                    <span className="flex-shrink mx-4 text-cream/40 font-mono text-[9px] uppercase tracking-wider">or sign in with</span>
+                    <div className="flex-grow border-t border-cream/10"></div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => window.location.href = '/api/auth/google'}
+                    className="w-full py-3.5 bg-white border border-cream/15 text-cream hover:bg-neutral-50 rounded font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-sm cursor-pointer flex items-center justify-center space-x-2"
+                  >
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" className="w-4 h-4 mr-2" alt="Google logo" />
+                    <span>Sign in with Google</span>
+                  </button>
+                </>
+              )}
 
             </form>
           </div>

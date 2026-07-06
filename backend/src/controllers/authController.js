@@ -6,6 +6,9 @@ import pool from '../db.js';
 const __dirname = path.resolve();
 const LOGIN_PAGE_PATH = path.join(__dirname, 'src', 'views', 'login.html');
 
+// In-memory session store (token -> user details)
+export const sessions = {};
+
 /**
  * Serves the beautiful login landing page
  */
@@ -99,8 +102,30 @@ export const googleCallback = async (req, res) => {
 
     const loggedInUser = dbResult.rows[0];
 
-    // Return visual verification dashboard
-    sendSuccessResponse(res, loggedInUser, 'Google Cloud OAuth 2.0');
+    // Generate session token
+    const token = 'sess_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+    
+    // Assign role. Email domains ending with @assembly.gov are MP/Admins. Otherwise Citizen.
+    let role = 'CITIZEN';
+    if (userInfo.email.toLowerCase().includes('admin')) {
+      role = 'ADMINISTRATOR';
+    } else if (userInfo.email.toLowerCase().includes('mp') || userInfo.email.toLowerCase().endsWith('@assembly.gov')) {
+      role = 'MP';
+    }
+
+    const userSession = {
+      id: loggedInUser.id,
+      name: loggedInUser.full_name,
+      email: loggedInUser.email,
+      role: role,
+      avatarUrl: loggedInUser.avatar_url
+    };
+    
+    sessions[token] = userSession;
+
+    // Redirect back to frontend with session token
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+    res.redirect(`${clientUrl}/?token=${token}`);
 
   } catch (error) {
     console.error('Google Auth Error:', error.message);
@@ -133,8 +158,20 @@ export const mockLogin = async (req, res) => {
 
     const loggedInUser = dbResult.rows[0];
     
-    // Return visual verification dashboard
-    sendSuccessResponse(res, loggedInUser, 'Developer Mock Bypass');
+    // Generate session token
+    const token = 'sess_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+    
+    sessions[token] = {
+      id: loggedInUser.id,
+      name: loggedInUser.full_name,
+      email: loggedInUser.email,
+      role: 'MP',
+      avatarUrl: loggedInUser.avatar_url
+    };
+
+    // Redirect to frontend with token
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+    res.redirect(`${clientUrl}/?token=${token}`);
   } catch (error) {
     console.error('Mock Login Database Error:', error.message);
     res.status(500).send(`
@@ -149,99 +186,137 @@ export const mockLogin = async (req, res) => {
   }
 };
 
-// Helper helper function to send standard aesthetic response page
-function sendSuccessResponse(res, user, source) {
-  res.setHeader('Content-Type', 'text/html');
-  res.status(200).send(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Login Success</title>
-      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
-      <style>
-        body {
-          font-family: 'Outfit', sans-serif;
-          background-color: #0b0f19;
-          color: #f3f4f6;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 100vh;
-          margin: 0;
-        }
-        .container {
-          background: rgba(17, 24, 39, 0.7);
-          backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          padding: 40px;
-          border-radius: 20px;
-          width: 90%;
-          max-width: 480px;
-          text-align: center;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .avatar {
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          border: 3px solid #6366f1;
-          margin-bottom: 20px;
-        }
-        h2 { color: #10b981; margin-bottom: 5px; }
-        .method-tag {
-          display: inline-block;
-          background: rgba(99, 102, 241, 0.2);
-          color: #818cf8;
-          font-size: 11px;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          padding: 4px 10px;
-          border-radius: 12px;
-          margin-bottom: 24px;
-        }
-        .user-info {
-          text-align: left;
-          background: rgba(255,255,255,0.03);
-          border: 1px solid rgba(255,255,255,0.05);
-          border-radius: 8px;
-          padding: 16px;
-          font-family: monospace;
-          font-size: 13px;
-          word-break: break-all;
-          margin-bottom: 24px;
-        }
-        .back-btn {
-          display: block;
-          padding: 12px;
-          background: #6366f1;
-          color: white;
-          text-decoration: none;
-          border-radius: 10px;
-          font-weight: 600;
-          transition: background 0.2s;
-        }
-        .back-btn:hover { background: #4f46e5; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <img class="avatar" src="${user.avatar_url || 'https://avatar.iran.liara.run/public'}" alt="Avatar">
-        <h2>Authentication Success!</h2>
-        <span class="method-tag">Method: ${source}</span>
-        
-        <div class="user-info">
-          <strong>Database Record Info:</strong><br/>
-          ----------------------------<br/>
-          ID: ${user.id}<br/>
-          Name: ${user.full_name}<br/>
-          Email: ${user.email}<br/>
-          Created At: ${user.created_at}
-        </div>
-        
-        <a href="/api/auth/login" class="back-btn">Return to Login Portal</a>
-      </div>
-    </body>
-    </html>
-  `);
-}
+/**
+ * Standard POST /api/auth/login endpoint (supporting form submit + seed bypass inputs)
+ */
+export const login = async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  try {
+    // Look up user in Neon database
+    let result = await pool.query('SELECT * FROM users WHERE email = $1', [email.toLowerCase()]);
+    let dbUser = result.rows[0];
+
+    // Auto-seed key bypass users if they do not exist yet in database
+    if (!dbUser && (email === 'mp@assembly.gov' || email === 'admin@assembly.gov' || email === 'citizen@assembly.gov')) {
+      let name = 'Councilor J. Doe';
+      let avatar = 'https://avatar.iran.liara.run/public/boy';
+      if (email === 'admin@assembly.gov') {
+        name = 'Administrator Smith';
+        avatar = 'https://avatar.iran.liara.run/public/girl';
+      } else if (email === 'citizen@assembly.gov') {
+        name = 'Jane Smith (Citizen)';
+        avatar = 'https://avatar.iran.liara.run/public/girl';
+      }
+      
+      const insertResult = await pool.query(
+        `INSERT INTO users (full_name, email, avatar_url)
+         VALUES ($1, $2, $3)
+         RETURNING *`,
+        [name, email.toLowerCase(), avatar]
+      );
+      dbUser = insertResult.rows[0];
+    }
+
+    if (!dbUser) {
+      return res.status(401).json({ error: 'Invalid credentials or user does not exist.' });
+    }
+
+    // Role assignment based on email keywords
+    let role = 'CITIZEN';
+    if (email.toLowerCase().includes('admin')) {
+      role = 'ADMINISTRATOR';
+    } else if (email.toLowerCase().includes('mp')) {
+      role = 'MP';
+    }
+
+    const token = 'sess_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+    
+    const userSession = {
+      id: dbUser.id,
+      name: dbUser.full_name,
+      email: dbUser.email,
+      role: role,
+      avatarUrl: dbUser.avatar_url
+    };
+
+    sessions[token] = userSession;
+
+    res.json({ user: userSession, token });
+  } catch (error) {
+    console.error('Login database error:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+/**
+ * GET /api/auth/me - Retrieves the active session user
+ */
+export const getMe = (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.substring(7);
+    const userSession = sessions[token];
+    if (userSession) {
+      return res.json({ user: userSession });
+    }
+  }
+  res.status(401).json({ error: 'Unauthorized access' });
+};
+
+/**
+ * POST /api/auth/logout - Terminates the active session
+ */
+export const logout = (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.substring(7);
+    delete sessions[token];
+  }
+  res.json({ success: true });
+};
+
+/**
+ * POST /api/auth/profile/update - Updates the user profile in Neon DB
+ */
+export const updateProfile = async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Unauthorized access' });
+  }
+
+  const token = authHeader.substring(7);
+  const userSession = sessions[token];
+  if (!userSession) {
+    return res.status(401).json({ error: 'Unauthorized access' });
+  }
+
+  const { name, email, avatarUrl } = req.body;
+
+  try {
+    const dbResult = await pool.query(
+      `UPDATE users 
+       SET full_name = COALESCE($1, full_name), 
+           email = COALESCE($2, email), 
+           avatar_url = COALESCE($3, avatar_url)
+       WHERE id = $4
+       RETURNING *`,
+      [name, email ? email.toLowerCase() : null, avatarUrl, userSession.id]
+    );
+
+    const updatedUser = dbResult.rows[0];
+
+    // Synchronize current session details
+    userSession.name = updatedUser.full_name;
+    userSession.email = updatedUser.email;
+    userSession.avatarUrl = updatedUser.avatar_url;
+
+    res.json({ user: userSession });
+  } catch (error) {
+    console.error('Update profile database error:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};

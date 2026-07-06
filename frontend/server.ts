@@ -137,7 +137,7 @@ interface UserRecord {
   name: string;
   email: string;
   passwordHash: string;
-  role: "MP" | "ADMINISTRATOR";
+  role: "MP" | "ADMINISTRATOR" | "CITIZEN";
   districtId?: string;
   office?: string;
   avatarUrl?: string;
@@ -162,6 +162,14 @@ const users: UserRecord[] = [
     office: "Infrastructural Oversight",
     avatarUrl: "",
   },
+  {
+    id: "usr-3",
+    name: "Jane Smith (Citizen)",
+    email: "citizen@assembly.gov",
+    passwordHash: "password123",
+    role: "CITIZEN",
+    avatarUrl: "",
+  },
 ];
 
 const sessions: Record<string, string> = {}; // token -> userId
@@ -179,6 +187,8 @@ function getCurrentUser(req: any): UserRecord | null {
 }
 
 // API Endpoints
+// Commented out to let Vite proxy auth requests to the real backend Express server (port 5000)
+/*
 app.get("/api/auth/me", (req, res) => {
   const user = getCurrentUser(req);
   if (!user) {
@@ -276,6 +286,7 @@ app.post("/api/auth/profile/update", (req, res) => {
   const { passwordHash, ...safeUser } = user;
   res.json({ user: safeUser });
 });
+*/
 
 // API Endpoints
 app.get("/api/ledger", (req, res) => {

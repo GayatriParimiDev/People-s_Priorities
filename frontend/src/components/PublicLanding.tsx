@@ -34,7 +34,7 @@ export default function PublicLanding({ setView, ledger }: PublicLandingProps) {
 
           <div>
             <button 
-              onClick={() => setView("INTAKE")}
+              onClick={() => setView("AUTH")}
               className="px-5 py-2.5 bg-cream text-navy hover:bg-ochre hover:text-cream transition-all duration-300 font-mono font-bold text-xs uppercase tracking-wider rounded border border-sage/30 shadow-md cursor-pointer"
             >
               Join Assembly
@@ -264,7 +264,7 @@ export default function PublicLanding({ setView, ledger }: PublicLandingProps) {
             READY TO LOG YOUR PRIORITY?
           </h2>
           <button 
-            onClick={() => setView("INTAKE")}
+            onClick={() => setView("AUTH")}
             className="px-8 py-4 bg-cream text-navy hover:bg-ochre hover:text-cream transition-all duration-300 font-mono font-bold text-xs uppercase tracking-widest rounded border border-sage/40 shadow-xl cursor-pointer"
           >
             JOIN THE ASSEMBLY

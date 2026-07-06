@@ -38,7 +38,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: "MP" | "ADMINISTRATOR";
+  role: "MP" | "ADMINISTRATOR" | "CITIZEN";
   districtId?: string;
   office?: string;
   avatarUrl?: string;

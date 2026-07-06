@@ -114,6 +114,9 @@ export default function Sidebar({
         <div className="h-[1px] bg-sage/10 my-2"></div>
 
         {menuItems.map((item) => {
+          if (item.id === "DASHBOARD" && !sessionStorage.getItem("cta_clicked")) {
+            return null;
+          }
           const Icon = item.icon;
           const isActive = currentView === item.id;
           return (

@@ -109,15 +109,15 @@ export default function PublicLanding({ setView, ledger }: PublicLandingProps) {
       </section>
 
       {/* Live Scrolling Ticker Banner */}
-      <section className="bg-ochre text-cream py-3.5 px-6 border-b border-sage/20 overflow-hidden relative select-none">
+      <section className="bg-neutral-200 text-coral mt-12 py-5 px-6 border-b border-sage/20 overflow-hidden relative select-none">
         <div className="flex items-center space-x-6 whitespace-nowrap animate-marquee">
-          <span className="font-mono text-xs font-bold uppercase tracking-wider shrink-0 bg-navy text-cream px-2 py-0.5 rounded">
+          <span className="font-mono text-xs font-bold uppercase tracking-wider shrink-0 bg-cream text-navy px-2 py-0.5 rounded">
             Live Feed
           </span>
-          <div className="flex space-x-12 font-mono text-xs text-cream/90 items-center">
+          <div className="flex space-x-12 font-mono text-xs text-coral/95 items-center">
             <span>| Permanent. Public. Immutable. //</span>
             {liveLogs.map((log) => (
-              <span key={log.id} className="hover:text-white transition-all cursor-pointer" onClick={() => setView("LEDGER")}>
+              <span key={log.id} className="hover:text-coral/80 hover:underline transition-all cursor-pointer" onClick={() => setView("LEDGER")}>
                 LOG #{log.id.replace("LGR-", "")}: {log.title.toUpperCase()} - {log.priorityLevel} //
               </span>
             ))}

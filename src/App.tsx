@@ -14,6 +14,51 @@ export default function App() {
   // Navigation View State - Defaults to the beautiful Public Landing page
   const [currentView, setView] = useState<ViewState>("LANDING");
 
+  // Route protection and popstate synchronization
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      if (path === "/dashboard") {
+        const hasClicked = sessionStorage.getItem("cta_clicked");
+        if (hasClicked) {
+          setView("DASHBOARD");
+        } else {
+          window.history.replaceState({}, "", "/");
+          setView("LANDING");
+        }
+      } else if (path === "/") {
+        setView("LANDING");
+      }
+    };
+
+    handlePopState(); // run initial check
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  const handleLandingNavigate = (view: ViewState) => {
+    if (view === "INTAKE") {
+      sessionStorage.setItem("cta_clicked", "true");
+      window.history.pushState({}, "", "/dashboard");
+    } else if (view === "LANDING") {
+      window.history.pushState({}, "", "/");
+    }
+    setView(view);
+  };
+
+  const handleGeneralNavigate = (view: ViewState) => {
+    if (view === "LANDING") {
+      window.history.pushState({}, "", "/");
+    } else {
+      const hasClicked = sessionStorage.getItem("cta_clicked");
+      if (hasClicked) {
+        window.history.pushState({}, "", "/dashboard");
+      }
+    }
+    setView(view);
+  };
+
   // User Authentication State
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
@@ -186,16 +231,16 @@ export default function App() {
 
   // Triggered when clicking "New Initiative +" in Sidebar
   const handleNewInitiative = () => {
-    setView("INTAKE");
+    handleGeneralNavigate("INTAKE");
   };
 
   // Render Layouts: Landing vs Administrative Dashboard Frame
   if (currentView === "LANDING") {
-    return <PublicLanding setView={setView} ledger={ledger} />;
+    return <PublicLanding setView={handleLandingNavigate} ledger={ledger} />;
   }
 
   if (currentView === "AUTH") {
-    return <AuthView setView={setView} onLoginSuccess={handleLoginSuccess} />;
+    return <AuthView setView={handleGeneralNavigate} onLoginSuccess={handleLoginSuccess} />;
   }
 
   return (
@@ -203,7 +248,7 @@ export default function App() {
       {/* Global persistent Sidebar layout */}
       <Sidebar 
         currentView={currentView} 
-        setView={setView} 
+        setView={handleGeneralNavigate} 
         districtId={config.districtId} 
         representative={config.representative}
         onNewInitiative={handleNewInitiative}
@@ -217,7 +262,7 @@ export default function App() {
           {currentView === "INTAKE" && (
             <IntakeConsole 
               onAddLedgerItem={handleAddLedgerItem} 
-              setView={setView} 
+              setView={handleGeneralNavigate} 
             />
           )}
 
@@ -226,7 +271,7 @@ export default function App() {
               ledger={ledger} 
               themes={themes} 
               totalDemands={1492 + ledger.length}
-              setView={setView} 
+              setView={handleGeneralNavigate} 
             />
           )}
 
@@ -244,7 +289,7 @@ export default function App() {
           {currentView === "LEDGER" && (
             <LedgerView 
               ledger={ledger} 
-              setView={setView} 
+              setView={handleGeneralNavigate} 
             />
           )}
 
@@ -255,7 +300,7 @@ export default function App() {
               currentUser={currentUser}
               onLogout={handleLogout}
               onUpdateUser={handleUpdateUser}
-              setView={setView}
+              setView={handleGeneralNavigate}
             />
           )}
         </div>

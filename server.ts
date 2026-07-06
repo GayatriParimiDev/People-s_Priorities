@@ -288,6 +288,17 @@ app.get("/api/ledger", (req, res) => {
   });
 });
 
+app.get("/api/dashboard", (req, res) => {
+  const resolvedCount = ledger.filter(item => item.status === "CLOSED" || item.priorityLevel === "RESOLVED").length;
+  res.json({
+    totalDemands: ledger.reduce((sum, item) => sum + 1, 1488),
+    criticalResolutions: 380 + resolvedCount,
+    pendingAllocation: "8.4M",
+    themes,
+    activeMarkers: ledger.length
+  });
+});
+
 app.post("/api/ledger/endorse", (req, res) => {
   const { proposal } = req.body;
   if (proposal === "alpha") {

@@ -1612,7 +1612,7 @@ export default function CitizenPortal({
                             type="button"
                             onClick={handleReportSubmit}
                             disabled={duplicateChecking}
-                            className="px-5 py-2.5 bg-indigo-650 hover:bg-indigo-700 text-white font-bold text-[10px] uppercase tracking-wider rounded-lg flex items-center space-x-1 shadow-md cursor-pointer disabled:opacity-55"
+                            className="px-5 py-2.5 bg-civic-violet hover:bg-civic-violet/90 text-white font-bold text-[10px] uppercase tracking-wider rounded-lg flex items-center space-x-1 shadow-md cursor-pointer disabled:opacity-55"
                           >
                             <span>{duplicateChecking ? "Checking Duplicates..." : "Immutable Submit to Ledger"}</span>
                           </button>
@@ -1684,7 +1684,7 @@ export default function CitizenPortal({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
                       <VoiceRecorder
                         onTranscribed={(transcript, detectedLanguage) => {
-                          setDescription(transcript);
+                          setDescription((prev) => prev + (prev ? " " : "") + transcript);
                           if (!title) {
                             const langLabel = detectedLanguage && detectedLanguage.toLowerCase() !== "unknown" 
                               ? ` [${detectedLanguage}]` 
@@ -2194,7 +2194,7 @@ export default function CitizenPortal({
             />
             <VoiceRecorder
               onTranscribed={(transcript) => {
-                setWhatsappMessage(transcript);
+                setWhatsappMessage((prev) => prev + (prev ? " " : "") + transcript);
               }}
               onRecordingStateChange={setIsWhatsappRecording}
               variant="whatsapp"
@@ -2210,10 +2210,7 @@ export default function CitizenPortal({
         </div>
       )}
 
-      {/* Footer */}
-      <footer className="py-6 border-t border-slate-200 bg-white text-center text-[10px] font-mono text-slate-500 uppercase tracking-widest mt-12">
-        Decentralized District Ledger System Â© {new Date().getFullYear()} // {user.constituency.name}
-      </footer>
+     
     </div>
   );
 }

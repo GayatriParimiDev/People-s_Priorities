@@ -12,88 +12,101 @@ interface VoiceRecorderProps {
 export default function VoiceRecorder({
   onTranscribed,
   onRecordingStateChange,
-  placeholderText = "Click microphone to dictate in Hindi/Kannada/Marathi/Tamil.",
+  placeholderText = "Click microphone to dictate in your system language (e.g. English, Hindi).",
   className = "",
   variant = "form",
 }: VoiceRecorderProps) {
   const [recording, setRecording] = useState(false);
-  const [status, setStatus] = useState<"idle" | "recording" | "uploading" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "recording" | "transcribing" | "error">("idle");
   const [recordingSeconds, setRecordingSeconds] = useState(0);
 
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
+  const recognitionRef = useRef<any>(null);
   const timerRef = useRef<any>(null);
 
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
     };
   }, []);
 
-  const startRecording = async () => {
+  const startRecording = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      console.error("Web Speech API is not supported in this browser.");
+      setStatus("error");
+      return;
+    }
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = false;
+      
+      // Auto-detect browser language or fall back to English
+      recognition.lang = navigator.language || "en-US";
 
-      const mimeType = MediaRecorder.isTypeSupported("audio/webm")
-        ? "audio/webm"
-        : MediaRecorder.isTypeSupported("audio/mp4")
-        ? "audio/mp4"
-        : "";
+      let fullTranscript = "";
 
-      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
-      chunksRef.current = [];
-
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
+      recognition.onstart = () => {
+        setRecording(true);
+        setStatus("recording");
+        onRecordingStateChange?.(true);
+        setRecordingSeconds(0);
+        
+        if (timerRef.current) clearInterval(timerRef.current);
+        timerRef.current = setInterval(() => setRecordingSeconds((s) => s + 1), 1000);
       };
 
-      recorder.onstop = async () => {
-        const blob = new Blob(chunksRef.current, { type: mimeType || "audio/webm" });
-        stream.getTracks().forEach((t) => t.stop());
-        await uploadAndTranscribe(blob, mimeType || "audio/webm");
+      recognition.onresult = (event: any) => {
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            fullTranscript += event.results[i][0].transcript + " ";
+          }
+        }
       };
 
-      mediaRecorderRef.current = recorder;
-      recorder.start();
-      setRecording(true);
-      setStatus("recording");
-      onRecordingStateChange?.(true);
-      setRecordingSeconds(0);
-      timerRef.current = setInterval(() => setRecordingSeconds((s) => s + 1), 1000);
+      recognition.onerror = (event: any) => {
+        console.error("In-browser Speech recognition error:", event.error);
+        if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+          setStatus("error");
+        }
+      };
+
+      recognition.onend = () => {
+        setRecording(false);
+        onRecordingStateChange?.(false);
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+
+        if (fullTranscript.trim()) {
+          onTranscribed(fullTranscript.trim(), recognition.lang);
+          setStatus("idle");
+        } else if (status !== "error") {
+          setStatus("idle");
+        }
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
     } catch (err) {
-      console.error("Microphone access failed:", err);
+      console.error("Failed to initialize Web Speech API:", err);
       setStatus("error");
     }
   };
 
   const stopRecording = () => {
-    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
-      mediaRecorderRef.current.stop();
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
     }
-    setRecording(false);
-    onRecordingStateChange?.(false);
-  };
-
-  const uploadAndTranscribe = async (blob: Blob, mimeType: string) => {
-    setStatus("uploading");
-    try {
-      const formData = new FormData();
-      const extension = mimeType.includes("mp4") ? "mp4" : "webm";
-      formData.append("audio", blob, `recording.${extension}`);
-
-      const res = await fetch("/api/transcribe", { method: "POST", body: formData });
-      if (!res.ok) {
-        const errBody = await res.json().catch(() => ({}));
-        throw new Error(errBody.error || "Transcription request failed");
-      }
-
-      const data = await res.json();
-      onTranscribed(data.transcript, data.detectedLanguage);
-      setStatus("idle");
-    } catch (err) {
-      console.error("Upload/transcription failed:", err);
-      setStatus("error");
+    if (recognitionRef.current) {
+      setStatus("transcribing");
+      recognitionRef.current.stop();
     }
   };
 
@@ -114,10 +127,10 @@ export default function VoiceRecorder({
               ? "bg-rose-600 border-rose-500 text-white animate-pulse"
               : "bg-slate-100 border-slate-200 text-slate-500 hover:text-slate-800"
           }`}
-          title={recording ? "Stop Recording" : "Record Voice Note"}
-          disabled={status === "uploading"}
+          title={recording ? "Stop Dictation" : "Record Voice Note"}
+          disabled={status === "transcribing"}
         >
-          {status === "uploading" ? (
+          {status === "transcribing" ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600" />
           ) : recording ? (
             <MicOff className="w-3.5 h-3.5" />
@@ -127,15 +140,15 @@ export default function VoiceRecorder({
         </button>
         {recording && (
           <span className="text-[10px] text-rose-600 font-bold animate-pulse">
-            Recording {formatTime(recordingSeconds)}
+            Listening {formatTime(recordingSeconds)}
           </span>
         )}
-        {status === "uploading" && (
+        {status === "transcribing" && (
           <span className="text-[10px] text-slate-500 italic animate-pulse">Transcribing...</span>
         )}
         {status === "error" && (
           <span className="text-[9px] text-rose-500 leading-tight">
-            Mic error. Use HTTPS or check permission.
+            Speech API error or block.
           </span>
         )}
       </div>
@@ -146,20 +159,20 @@ export default function VoiceRecorder({
   return (
     <div className={`space-y-2 ${className}`}>
       <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider block">
-        Voice Intake (Gemini Multilingual)
+        Voice Intake (In-Browser Speech-to-Text)
       </span>
       <div className="flex items-center space-x-3 bg-white p-3 rounded-xl border border-slate-250 shadow-xs">
         <button
           type="button"
           onClick={recording ? stopRecording : startRecording}
-          disabled={status === "uploading"}
+          disabled={status === "transcribing"}
           className={`p-3 rounded-full cursor-pointer flex items-center justify-center border transition-all shadow-sm ${
             recording
               ? "bg-rose-600 border-rose-500 text-white animate-pulse"
               : "bg-rose-50 border-rose-100 text-rose-600 hover:bg-rose-100"
           }`}
         >
-          {status === "uploading" ? (
+          {status === "transcribing" ? (
             <Loader2 className="w-5 h-5 animate-spin" />
           ) : recording ? (
             <MicOff className="w-5 h-5" />
@@ -172,7 +185,7 @@ export default function VoiceRecorder({
           {recording ? (
             <div className="space-y-1">
               <span className="text-rose-600 font-bold text-xs flex items-center space-x-1.5 animate-pulse">
-                <span>● RECORDING</span>
+                <span>● LISTENING</span>
                 <span className="bg-rose-100 px-1.5 py-0.5 rounded text-[10px] text-rose-700 font-mono">
                   {formatTime(recordingSeconds)}
                 </span>
@@ -181,27 +194,27 @@ export default function VoiceRecorder({
                 Speaking... Tap mic again when finished.
               </span>
             </div>
-          ) : status === "uploading" ? (
+          ) : status === "transcribing" ? (
             <div className="space-y-0.5">
               <span className="text-emerald-600 font-semibold text-xs animate-pulse">
-                Transcribing Audio...
+                Processing Speech...
               </span>
               <span className="text-[10px] text-slate-500 block">
-                Analyzing multilingual voice content via Gemini API.
+                Formatting final text transcript in-browser.
               </span>
             </div>
           ) : status === "error" ? (
             <div className="space-y-0.5">
-              <span className="text-rose-600 font-bold text-xs block">Transcription Failed</span>
+              <span className="text-rose-600 font-bold text-xs block">Speech Recognition Failed</span>
               <span className="text-[10px] text-rose-500 leading-tight block">
-                Check mic permissions and that the backend server is running.
+                Please check microphone permissions or ensure your browser supports the Web Speech API.
               </span>
             </div>
           ) : (
             <div className="text-[11px] leading-tight text-slate-650">
               <span className="text-slate-500 font-sans block">{placeholderText}</span>
               <span className="text-slate-400 text-[9px] block mt-0.5 uppercase tracking-wide">
-                Supports English · Hindi · Kannada · Tamil · Marathi
+                Supports English · Hindi · Tamil · Kannada · System Native Locale
               </span>
             </div>
           )}

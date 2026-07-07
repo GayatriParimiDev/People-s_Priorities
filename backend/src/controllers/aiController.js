@@ -1,6 +1,7 @@
 import pool from '../db.js';
 import { GoogleGenAI } from '@google/genai';
 import { runAllAgents } from '../worker.js';
+import { GEMINI_MODEL } from '../config.js';
 
 let aiClient = null;
 function getGeminiClient() {
@@ -259,7 +260,7 @@ Keep the tone encouraging, transparent, and direct. Keep the length under 4 sent
 `;
 
     const response = await gemini.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: GEMINI_MODEL,
       contents: prompt
     });
 
@@ -322,7 +323,7 @@ Return ONLY the JSON object. Do not include markdown formatting or backticks.
 `;
 
     const response = await gemini.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: GEMINI_MODEL,
       contents: prompt
     });
 
@@ -407,7 +408,7 @@ Return ONLY the JSON object. Do not include markdown formatting or backticks.
 `;
 
     const response = await gemini.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: GEMINI_MODEL,
       contents: prompt
     });
 

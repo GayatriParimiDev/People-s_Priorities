@@ -1,6 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import { GoogleGenAI } from '@google/genai';
+import { GEMINI_MODEL } from '../config.js';
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -32,7 +33,7 @@ router.post('/', upload.single('audio'), async (req, res) => {
     }
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: GEMINI_MODEL,
       contents: [
         {
           parts: [

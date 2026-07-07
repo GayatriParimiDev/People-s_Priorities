@@ -30,7 +30,7 @@ app.post('/api/transcribe', upload.single('audio'), async (req: any, res) => {
     }
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: process.env.GEMINI_MODEL || "gemini-3.1-flash-lite",
       contents: [
         {
           parts: [
@@ -621,7 +621,7 @@ app.post("/api/ledger/submit", async (req, res) => {
   if (ai) {
     try {
       const response = await ai.models.generateContent({
-        model: "gemini-2.0-flash",
+        model: process.env.GEMINI_MODEL || "gemini-3.1-flash-lite",
         contents: `Analyze the following citizen constituency demand submission and extract structure details.
 Input Type: ${type}
 Submission Text/Description: "${text}"

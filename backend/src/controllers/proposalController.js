@@ -1,5 +1,6 @@
 import pool from '../db.js';
 import { GoogleGenAI } from '@google/genai';
+import { GEMINI_MODEL } from '../config.js';
 
 // Initialize Gemini client lazily
 let aiClient = null;
@@ -341,7 +342,7 @@ export const explainRanking = async (req, res) => {
     if (ai) {
       try {
         const response = await ai.models.generateContent({
-          model: 'gemini-3.5-flash',
+          model: GEMINI_MODEL,
           contents: `Generate a 2-sentence professional, plain-language justification explaining the ranking of the following constituency proposal to a Member of Parliament:
 Proposal: "${title}" (${category})
 Demand Score Breakdown factors:
@@ -435,7 +436,7 @@ export const matchScheme = async (req, res) => {
   if (ai) {
     try {
       const response = await ai.models.generateContent({
-        model: 'gemini-3.5-flash',
+        model: GEMINI_MODEL,
         contents: `Assess matching government schemes for this development proposal description:
 Category: "${category}"
 Description: "${description || ''}"
@@ -646,7 +647,7 @@ Details:
     if (ai) {
       try {
         const response = await ai.models.generateContent({
-          model: 'gemini-3.5-flash',
+          model: GEMINI_MODEL,
           contents: `Create a professional Executive Legislative Report summarizing these constituency projects for the public/council review. Output a beautiful, structured Markdown document:
           
           ${markdownReport}`
@@ -685,7 +686,7 @@ export const draftResponse = async (req, res) => {
     if (ai) {
       try {
         const response = await ai.models.generateContent({
-          model: 'gemini-3.5-flash',
+          model: GEMINI_MODEL,
           contents: `Draft a 3-sentence official response from a Member of Parliament's office to the citizen complaints that clustered into this proposal:
 Title: "${title}"
 Category: "${category}"

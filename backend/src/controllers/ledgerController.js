@@ -1,6 +1,7 @@
 import pool from '../db.js';
 import { GoogleGenAI } from '@google/genai';
 import { sessions } from './authController.js';
+import { GEMINI_MODEL } from '../config.js';
 
 // In-memory endorsements state for comparison telemetry (matching frontend count contracts)
 let proposalEndorsements = {
@@ -119,7 +120,7 @@ export const submitProposal = async (req, res) => {
   if (ai) {
     try {
       const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: GEMINI_MODEL,
         contents: `Analyze the following citizen constituency demand submission and extract structured details.
 Input Type: ${type}
 Submission Text/Description: "${text}"

@@ -1,6 +1,7 @@
 import pool from './db.js';
 import dotenv from 'dotenv';
 import { GoogleGenAI } from '@google/genai';
+import { GEMINI_MODEL } from './config.js';
 
 dotenv.config();
 
@@ -83,7 +84,7 @@ Return ONLY the JSON object. Do not include markdown formatting or backticks.
 `;
 
       const response = await gemini.models.generateContent({
-        model: 'gemini-2.0-flash',
+        model: GEMINI_MODEL,
         contents: prompt
       });
 
@@ -161,7 +162,7 @@ Return ONLY the JSON object. Do not include markdown formatting or backticks.
 `;
 
       const response = await gemini.models.generateContent({
-        model: 'gemini-2.0-flash',
+        model: GEMINI_MODEL,
         contents: prompt
       });
 
@@ -238,7 +239,7 @@ Return ONLY the JSON array. Do not include markdown formatting or backticks.
 `;
 
     const response = await gemini.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: GEMINI_MODEL,
       contents: prompt
     });
 
@@ -339,7 +340,7 @@ Return ONLY the JSON object. Do not include markdown formatting or backticks.
 `;
 
       const response = await gemini.models.generateContent({
-        model: 'gemini-2.0-flash',
+        model: GEMINI_MODEL,
         contents: prompt
       });
 
@@ -416,7 +417,7 @@ Return your response in a clear markdown format.
 `;
 
       const response = await gemini.models.generateContent({
-        model: 'gemini-2.0-flash',
+        model: GEMINI_MODEL,
         contents: prompt
       });
 
@@ -492,7 +493,7 @@ Return ONLY the JSON object. Do not include markdown formatting or backticks.
 `;
 
       const response = await gemini.models.generateContent({
-        model: 'gemini-2.0-flash',
+        model: GEMINI_MODEL,
         contents: prompt
       });
 

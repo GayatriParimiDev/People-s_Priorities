@@ -420,9 +420,9 @@ export default function App() {
   // Render loading screen during initial session verification
   if (loading) {
     return (
-      <div className="min-h-screen bg-navy flex flex-col items-center justify-center text-cream font-sans">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-ochre"></div>
-        <p className="mt-4 text-xs font-mono tracking-widest text-sage uppercase">Securing Legislative Gateway...</p>
+      <div className="min-h-screen bg-[#F4F6F8] flex flex-col items-center justify-center font-sans">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#0B4F92]"></div>
+        <p className="mt-4 text-xs font-mono tracking-widest text-[#4F5A6D] uppercase">Securing Legislative Gateway...</p>
       </div>
     );
   }
@@ -454,9 +454,7 @@ export default function App() {
   }
 
   return (
-    <div className={`flex h-screen w-screen overflow-hidden ${
-      currentUser.role === "ADMINISTRATOR" ? "bg-emerald-50/10 text-emerald-950 font-mono" : "bg-white text-black"
-    }`}>
+    <div className="flex h-screen w-screen overflow-hidden bg-[#F4F6F8] text-[#000000] font-sans">
       {/* Global persistent Sidebar layout */}
       <Sidebar 
         currentView={currentView} 
@@ -469,7 +467,7 @@ export default function App() {
       />
 
       {/* Main viewport area */}
-      <main className="flex-1 overflow-y-auto bg-slate-100/50">
+      <main className="flex-1 overflow-y-auto bg-[#F4F6F8]">
         <div className="max-w-7xl mx-auto">
           {currentView === "INTAKE" && (
             <IntakeConsole 

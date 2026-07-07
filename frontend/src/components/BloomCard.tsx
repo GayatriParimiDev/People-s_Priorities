@@ -8,32 +8,55 @@ interface BloomCardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export default function BloomCard({ demandScore, children, className = "", ...props }: BloomCardProps) {
-  // Map demand score to exactly one flower accent color (no gradients, crisp petals)
-  const getBloomColor = (score: number): string => {
+  /**
+   * Light Formal BloomCard — adapts its accent bar color + intensity
+   * based on demand_score. Higher scores → stronger, darker accent.
+   * Card body remains #FFFFFF with a 4px left accent bar.
+   */
+
+  const getAccentConfig = (score: number): { color: string; barWidth: string; shadowColor: string } => {
     if (score > 75) {
-      return "#FF6B9D"; // peony pink - high urgency
+      // High urgency — Peony Crimson accent
+      const intensity = Math.min(1, (score - 75) / 25); // 0 to 1 within the 75-100 range
+      return {
+        color: `rgba(201, 42, 42, ${0.7 + intensity * 0.3})`,
+        barWidth: "4px",
+        shadowColor: `rgba(201, 42, 42, ${0.06 + intensity * 0.08})`
+      };
     } else if (score > 40) {
-      return "#FFA94D"; // marigold orange - medium urgency
+      // Medium urgency — Marigold Amber accent
+      const intensity = Math.min(1, (score - 40) / 35);
+      return {
+        color: `rgba(185, 127, 0, ${0.6 + intensity * 0.4})`,
+        barWidth: "4px",
+        shadowColor: `rgba(185, 127, 0, ${0.04 + intensity * 0.06})`
+      };
     } else {
-      return "#4ECDC4"; // jade teal - low urgency/resolved
+      // Low urgency / resolved — Jade Teal accent
+      return {
+        color: "rgba(18, 119, 109, 0.65)",
+        barWidth: "3px",
+        shadowColor: "rgba(18, 119, 109, 0.04)"
+      };
     }
   };
 
-  const color = getBloomColor(demandScore);
+  const accent = getAccentConfig(demandScore);
   const isHighUrgency = demandScore > 75;
 
-  // Solid warm ivory card with a clear, single-color accent border
   const bloomStyle: React.CSSProperties = {
-    backgroundColor: "#FDFBF7",
-    borderColor: color,
-    borderWidth: "2px",
-    borderStyle: "solid",
+    backgroundColor: "#FFFFFF",
+    borderLeft: `${accent.barWidth} solid ${accent.color}`,
+    borderTop: "1px solid #E2E8F0",
+    borderRight: "1px solid #E2E8F0",
+    borderBottom: "1px solid #E2E8F0",
+    boxShadow: `0 1px 4px ${accent.shadowColor}`,
   };
 
   return (
     <div
       style={bloomStyle}
-      className={`rounded-2xl p-5 shadow-sm transition-all duration-300 ${
+      className={`rounded-lg p-5 transition-all duration-250 ${
         isHighUrgency ? "bloom-pulse hover:shadow-md" : "hover:shadow-sm"
       } ${className}`}
       {...props}

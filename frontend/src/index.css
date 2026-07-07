@@ -1,27 +1,46 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════════
+   PEOPLE'S PRIORITIES — LIGHT FORMAL DESIGN SYSTEM
+   Philosophy: Trustworthy · Efficient · Intact · Smooth
+   ═══════════════════════════════════════════════════════════════ */
+
 :root {
-  /* Floral Base Palette */
-  --base-white: #FFFFFF;
-  --base-ivory: #FDFBF7;
-  --text-dark: #1A1A2E; /* Dark navy for text readability */
-  
-  /* The Flower Accents */
-  --peony-pink: #FF6B9D;
-  --marigold-orange: #FFA94D;
-  --jade-teal: #4ECDC4;
-  --orchid-violet: #845EC2;
-  --leaf-green: #95D5B2;
-  --sunflower-yellow: #FFD93D;
-  
-  /* Fallbacks for existing layout selectors */
-  --navy: var(--text-dark);
-  --navy-dark: var(--base-white);
-  --cream: var(--text-dark);
-  --sage: #5C6370;
-  --ochre: var(--jade-teal);
-  --coral: var(--peony-pink);
+  /* ── Base Palette (Light Formal) ── */
+  --bg-base: #F4F6F8;          /* Cool-grey off-white application background */
+  --bg-container: #FFFFFF;      /* Card/panel backgrounds — pop subtly off base */
+  --bg-interactive: #EBF0F5;    /* Hover/active states */
+  --text-primary: #000000;      /* All headings & body — maximum contrast */
+  --text-secondary: #4F5A6D;    /* Captions, labels, muted text */
+  --brand-primary: #0B4F92;     /* Deep corporate blue — buttons, active icons */
+
+  /* ── Functional "Flower" Palette (Status & Origin accents) ── */
+  --peony-crimson: #C92A2A;     /* Urgent / Spike / Anomaly */
+  --jade-teal: #12776D;         /* Resolved / Positive */
+  --marigold-amber: #B97F00;    /* In-Progress / Warning */
+  --orchid-indigo: #6F32CF;     /* AI-Generated Content */
+
+  /* ── Extended Utility Colors ── */
+  --escalation-red: #DC2626;
+  --success-green: #0D9668;
+  --info-blue: #2563EB;
+
+  /* ── Legacy Token Aliases (backward compatibility) ── */
+  --base-white: var(--bg-container);
+  --base-ivory: var(--bg-base);
+  --text-dark: var(--text-primary);
+  --navy: var(--text-primary);
+  --navy-dark: var(--bg-base);
+  --cream: var(--text-primary);
+  --sage: var(--text-secondary);
+  --ochre: var(--brand-primary);
+  --coral: var(--peony-crimson);
+  --peony-pink: var(--peony-crimson);
+  --marigold-orange: var(--marigold-amber);
+  --orchid-violet: var(--orchid-indigo);
+  --leaf-green: var(--success-green);
+  --sunflower-yellow: #D4A017;
 }
 
 @theme {
@@ -30,70 +49,115 @@
   --font-serif: "Space Grotesk", Georgia, serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   --font-vampiro: var(--font-display);
-  
+
   --color-navy: var(--navy);
   --color-navy-dark: var(--navy-dark);
   --color-cream: var(--cream);
   --color-sage: var(--sage);
   --color-ochre: var(--ochre);
   --color-coral: var(--coral);
-  
+
   --color-base-white: var(--base-white);
   --color-base-ivory: var(--base-ivory);
   --color-text-dark: var(--text-dark);
-  
-  --color-peony-pink: var(--peony-pink);
-  --color-marigold-orange: var(--marigold-orange);
+
+  --color-peony-pink: var(--peony-crimson);
+  --color-marigold-orange: var(--marigold-amber);
   --color-jade-teal: var(--jade-teal);
-  --color-orchid-violet: var(--orchid-violet);
+  --color-orchid-violet: var(--orchid-indigo);
   --color-leaf-green: var(--leaf-green);
   --color-sunflower-yellow: var(--sunflower-yellow);
-  
+
   /* Map old token names for fallback compatibility */
-  --color-ink-navy: var(--text-dark);
-  --color-paper-warm: var(--base-ivory);
+  --color-ink-navy: var(--text-primary);
+  --color-paper-warm: var(--bg-base);
   --color-bloom-teal: var(--jade-teal);
-  --color-bloom-amber: var(--marigold-orange);
-  --color-bloom-coral: var(--peony-pink);
-  --color-civic-violet: var(--orchid-violet);
+  --color-bloom-amber: var(--marigold-amber);
+  --color-bloom-coral: var(--peony-crimson);
+  --color-civic-violet: var(--orchid-indigo);
 }
 
-/* Base resets & styled scrollbar */
+/* ═══════════════════════════════════════════════════════════════
+   BASE RESETS & GLOBAL STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
 html, body {
-  background-color: var(--navy-dark);
-  color: var(--cream);
-  font-family: var(--font-sans);
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: "Noto Sans", ui-sans-serif, system-ui, sans-serif;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
 }
 
+/* Headings default to Space Grotesk (Display) */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+/* ── Refined Scrollbar ── */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--navy-dark);
+  background: var(--bg-base);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--ochre);
-  border-radius: 3px;
+  background: #C1C7D0;
+  border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--sage);
+  background: var(--brand-primary);
 }
 
-/* Pulsing and mapping effects */
+/* ═══════════════════════════════════════════════════════════════
+   SMOOTH TRANSITIONS (200-300ms ease-in-out globally)
+   ═══════════════════════════════════════════════════════════════ */
+
+*,
+*::before,
+*::after {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Skeleton Loader (replaces spinners for "intact" feel) ── */
+@keyframes skeletonShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-loader {
+  background: linear-gradient(
+    90deg,
+    var(--bg-interactive) 25%,
+    #DFE4EA 37%,
+    var(--bg-interactive) 63%
+  );
+  background-size: 400% 100%;
+  animation: skeletonShimmer 1.4s ease infinite;
+  border-radius: 6px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MAP POINT & BLOOM CARD ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
 @keyframes pulseGlow {
   0%, 100% {
     transform: scale(1);
-    opacity: 0.8;
-    filter: drop-shadow(0 0 4px rgba(8, 30, 52, 0.2));
+    opacity: 0.85;
+    filter: drop-shadow(0 0 3px rgba(11, 79, 146, 0.15));
   }
   50% {
-    transform: scale(1.3);
+    transform: scale(1.2);
     opacity: 1;
-    filter: drop-shadow(0 0 12px rgba(139, 94, 60, 0.4));
+    filter: drop-shadow(0 0 10px rgba(11, 79, 146, 0.3));
   }
 }
 
@@ -101,14 +165,68 @@ html, body {
   animation: pulseGlow 2s infinite ease-in-out;
 }
 
-/* Custom typewriter typing and visual grids */
-.grid-bg {
-  background-image: linear-gradient(rgba(78, 94, 108, 0.08) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(78, 94, 108, 0.08) 1px, transparent 1px);
-  background-size: 20px 20px;
+/* BloomCard subtle accent pulse for critical items */
+@keyframes bloomAccentPulse {
+  0%, 100% {
+    box-shadow: 0 1px 8px -1px rgba(201, 42, 42, 0.08);
+  }
+  50% {
+    box-shadow: 0 4px 16px 0px rgba(201, 42, 42, 0.16);
+  }
 }
 
-/* Accessibility contrast overrides for light theme on dark background blocks */
+.bloom-pulse {
+  animation: bloomAccentPulse 2.8s infinite ease-in-out;
+}
+
+/* ── Fade-in for data updates ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LAYOUT GRID BACKGROUND (8px base grid)
+   ═══════════════════════════════════════════════════════════════ */
+
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(79, 90, 109, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 90, 109, 0.04) 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT-FORMAL CONTAINER CLASSES
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Primary content container — card on the bg-base */
+.lf-card {
+  background-color: var(--bg-container);
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.lf-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+}
+
+/* Interactive container state */
+.lf-interactive {
+  background-color: var(--bg-interactive);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   OVERRIDE BLOCKS: Ensure backward compatibility
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Accessibility contrast overrides for dark background blocks */
 .bg-ochre,
 .bg-coral,
 .bg-neutral-900,
@@ -119,37 +237,61 @@ html, body {
 .bg-black\/45,
 .hover\:bg-ochre:hover,
 .hover\:bg-coral:hover {
-  --color-cream: #FCFAF6 !important;
+  --color-cream: #FFFFFF !important;
   --color-sage: #E8E6DF !important;
 }
 
-/* Restore dark text colors for light layout backgrounds nested inside dark blocks */
+/* Light layout override class */
 .bg-navy {
-  background-color: var(--color-navy) !important;
-  --color-cream: #081E34 !important;
-  --color-sage: #4E5E6C !important;
+  background-color: var(--text-primary) !important;
+  --color-cream: #FFFFFF !important;
+  --color-sage: var(--text-secondary) !important;
 }
 
 .bg-navy-dark {
-  background-color: var(--color-navy-dark) !important;
-  --color-cream: #081E34 !important;
-  --color-sage: #4E5E6C !important;
+  background-color: var(--bg-base) !important;
+  --color-cream: var(--text-primary) !important;
+  --color-sage: var(--text-secondary) !important;
 }
 
-/* Reusable BloomCard Gentle Pulse Animation */
-@keyframes bloomPulse {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 4px 14px -1px rgba(255, 90, 78, 0.2);
-  }
-  50% {
-    transform: scale(1.015);
-    box-shadow: 0 8px 24px 2px rgba(255, 90, 78, 0.35);
-  }
+/* ═══════════════════════════════════════════════════════════════
+   UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Accent bar on left edge of cards (4px, formal feel) */
+.accent-bar-urgent   { border-left: 4px solid var(--peony-crimson); }
+.accent-bar-progress { border-left: 4px solid var(--marigold-amber); }
+.accent-bar-resolved { border-left: 4px solid var(--jade-teal); }
+.accent-bar-ai       { border-left: 4px solid var(--orchid-indigo); }
+.accent-bar-brand    { border-left: 4px solid var(--brand-primary); }
+
+/* Status tag pills (text-primary on tinted background) */
+.tag-urgent   { background-color: rgba(201, 42, 42, 0.08); color: var(--peony-crimson); }
+.tag-progress { background-color: rgba(185, 127, 0, 0.08); color: var(--marigold-amber); }
+.tag-resolved { background-color: rgba(18, 119, 109, 0.08); color: var(--jade-teal); }
+.tag-ai       { background-color: rgba(111, 50, 207, 0.08); color: var(--orchid-indigo); }
+
+/* Primary action button */
+.btn-primary {
+  background-color: var(--brand-primary);
+  color: #FFFFFF;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.625rem 1.25rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
 }
 
-.bloom-pulse {
-  animation: bloomPulse 2.5s infinite ease-in-out;
+.btn-primary:hover {
+  background-color: #083D73;
+  box-shadow: 0 2px 8px rgba(11, 79, 146, 0.2);
 }
 
-
+.btn-primary:active {
+  transform: scale(0.98);
+}

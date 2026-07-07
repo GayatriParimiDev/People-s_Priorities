@@ -75,81 +75,68 @@ export default function Sidebar({
     ];
   }
 
-  // Theme configuration based on role (All light mode variants)
-  let themeClasses = {
-    sidebarBg: "bg-white border-r border-zinc-200 text-black font-sans",
-    logoSec: "border-b border-zinc-200 bg-zinc-50",
-    avatarBorder: "border-zinc-300 hover:border-zinc-500",
-    roleBadge: "bg-zinc-100 border border-zinc-200 text-zinc-700",
-    activeButton: "bg-amber-50 text-amber-800 font-bold border-l-4 border-ochre",
-    hoverButton: "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950",
-    divideLine: "bg-zinc-200",
-    bottomSec: "border-t border-zinc-200",
-    footerBg: "border-t border-zinc-150 bg-zinc-50 text-zinc-400"
-  };
+  // ── Light Formal Theme — role-based sidebar accents ──
+  // All roles use the same light formal base; only accent colors change
+  let accentColor = "#0B4F92"; // brand-primary default
+  let accentBg = "bg-[#0B4F92]/5";
+  let accentText = "text-[#0B4F92]";
+  let accentBorder = "border-[#0B4F92]";
+  let roleBadgeBg = "bg-[#0B4F92]/8 text-[#0B4F92] border-[#0B4F92]/15";
+  let footerLabel = "District Ledger System";
 
   if (isAdmin) {
-    themeClasses = {
-      sidebarBg: "bg-emerald-50/20 border-r border-emerald-200 text-emerald-900 font-mono",
-      logoSec: "border-b border-emerald-200 bg-emerald-50/50",
-      avatarBorder: "border-emerald-400 hover:border-emerald-600",
-      roleBadge: "bg-emerald-100/60 text-emerald-800 border border-emerald-200/50",
-      activeButton: "bg-emerald-100 text-emerald-900 font-bold border-l-4 border-emerald-600",
-      hoverButton: "text-emerald-800/80 hover:bg-emerald-100/30 hover:text-emerald-955",
-      divideLine: "bg-emerald-200/50",
-      bottomSec: "border-t border-emerald-200/50",
-      footerBg: "border-t border-emerald-200/40 bg-emerald-50/30 text-emerald-700/60"
-    };
+    accentColor = "#12776D";
+    accentBg = "bg-[#12776D]/5";
+    accentText = "text-[#12776D]";
+    accentBorder = "border-[#12776D]";
+    roleBadgeBg = "bg-[#12776D]/8 text-[#12776D] border-[#12776D]/15";
+    footerLabel = "ADMIN CONTROL CENTER // v1.0.4";
   } else if (isStaff) {
-    themeClasses = {
-      sidebarBg: "bg-slate-50 border-r border-slate-200 text-slate-800 font-sans",
-      logoSec: "border-b border-slate-200 bg-slate-100/50",
-      avatarBorder: "border-slate-350 hover:border-slate-500",
-      roleBadge: "bg-slate-100 border border-slate-200 text-indigo-700",
-      activeButton: "bg-indigo-50 text-indigo-750 font-bold border-l-4 border-indigo-650",
-      hoverButton: "text-slate-650 hover:bg-slate-150 hover:text-slate-900",
-      divideLine: "bg-slate-200",
-      bottomSec: "border-t border-slate-200",
-      footerBg: "border-t border-slate-200 bg-slate-100/30 text-slate-500"
-    };
+    accentColor = "#6F32CF";
+    accentBg = "bg-[#6F32CF]/5";
+    accentText = "text-[#6F32CF]";
+    accentBorder = "border-[#6F32CF]";
+    roleBadgeBg = "bg-[#6F32CF]/8 text-[#6F32CF] border-[#6F32CF]/15";
+    footerLabel = "STAFF WORKSTATION // v1.0.4";
   }
 
   return (
-    <div className={`w-64 flex flex-col h-screen sticky top-0 shrink-0 select-none z-30 shadow-sm transition-all duration-300 ${themeClasses.sidebarBg}`}>
-      {/* Top Profile / Office section */}
-      <div className={`p-6 flex items-center space-x-3 ${themeClasses.logoSec}`}>
+    <div className="w-64 flex flex-col h-screen sticky top-0 shrink-0 select-none z-30 bg-white border-r border-[#E2E8F0] font-sans transition-all duration-300">
+      
+      {/* ── Top Profile / Office section ── */}
+      <div className="p-6 flex items-center space-x-3 border-b border-[#E2E8F0] bg-[#F4F6F8]">
         <div className="relative group cursor-pointer" onClick={() => setView(currentUser ? "SETTINGS" : "AUTH")}>
-          <div className={`w-12 h-12 rounded overflow-hidden border-2 flex items-center justify-center bg-black/5 transition-all duration-300 ${themeClasses.avatarBorder}`}>
+          <div className={`w-11 h-11 rounded-lg overflow-hidden border-2 flex items-center justify-center bg-[#EBF0F5] transition-all duration-250 ${accentBorder}/30 hover:${accentBorder}`}>
             {currentUser ? (
-              <span className={`font-bold text-base uppercase ${isAdmin ? "font-mono" : "font-serif"}`}>
+              <span className="font-display font-bold text-sm uppercase text-[#000000]">
                 {currentUser.name.slice(0, 2)}
               </span>
             ) : (
-              <svg viewBox="0 0 100 100" className="w-full h-full bg-slate-100">
-                <circle cx="50" cy="40" r="22" fill="#0b1329" />
-                <path d="M15 88 C 15 65, 85 65, 85 88 Z" fill="#0b1329" />
+              <svg viewBox="0 0 100 100" className="w-full h-full bg-[#EBF0F5]">
+                <circle cx="50" cy="40" r="22" fill="#4F5A6D" />
+                <path d="M15 88 C 15 65, 85 65, 85 88 Z" fill="#4F5A6D" />
               </svg>
             )}
           </div>
           {currentUser && (
-            <span className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full ${isAdmin ? "bg-emerald-500" : "bg-emerald-500"}`}></span>
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 border-2 border-white rounded-full bg-[#0D9668]"></span>
           )}
         </div>
         <div className="flex-1 min-w-0">
           <h2 
-            className={`font-bold text-sm tracking-tight cursor-pointer transition-all truncate ${isAdmin ? "text-emerald-800 font-mono" : (isStaff ? "text-slate-800 hover:text-indigo-600 font-sans" : "text-black hover:text-ochre font-serif")}`} 
+            className="font-display font-bold text-sm tracking-tight cursor-pointer transition-colors duration-200 truncate text-[#000000] hover:text-[#0B4F92]"
             onClick={() => setView(currentUser ? "SETTINGS" : "AUTH")}
           >
             {currentUser ? currentUser.name : "Secure Portal"}
           </h2>
           {currentUser ? (
-            <span className={`inline-block text-[8px] uppercase px-1.5 py-0.5 rounded leading-none mt-1 font-bold ${themeClasses.roleBadge}`}>
+            <span className={`inline-block text-[8px] uppercase px-1.5 py-0.5 rounded leading-none mt-1 font-mono font-bold border ${roleBadgeBg}`}>
               {currentUser.role}
             </span>
           ) : (
             <button
               onClick={() => setView("AUTH")}
-              className="text-amber-600 font-mono text-[9px] mt-1 hover:underline flex items-center space-x-1 cursor-pointer text-left font-bold"
+              className="text-[#0B4F92] font-mono text-[9px] mt-1 hover:underline flex items-center space-x-1 cursor-pointer text-left font-bold"
             >
               <Lock className="w-2.5 h-2.5 shrink-0" />
               <span>Authenticate</span>
@@ -158,17 +145,13 @@ export default function Sidebar({
         </div>
       </div>
   
-      {/* Primary CTA: New Initiative Button (Only for MP / Staff to submit official actions) */}
+      {/* ── Primary CTA: New Initiative Button ── */}
       {(isMP || isStaff) && (
-        <div className="px-4 py-6">
+        <div className="px-4 py-5">
           <button 
             onClick={onNewInitiative}
             id="btn-new-initiative"
-            className={`w-full flex items-center justify-between px-4 py-3 text-white rounded font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-md transform active:scale-[0.98] border cursor-pointer ${
-              isStaff 
-                ? "bg-indigo-650 hover:bg-indigo-600 border-indigo-650/20" 
-                : "bg-coral hover:bg-coral/90 border-coral/10"
-            }`}
+            className="btn-primary w-full flex items-center justify-between shadow-sm transform active:scale-[0.97]"
           >
             <span>New Initiative</span>
             <Plus className="w-4 h-4" />
@@ -176,22 +159,22 @@ export default function Sidebar({
         </div>
       )}
 
-      {/* Navigation List */}
-      <nav className={`flex-1 px-3 space-y-1 ${isAdmin ? "pt-6" : (isStaff && !onNewInitiative ? "pt-6" : "")}`}>
+      {/* ── Navigation List ── */}
+      <nav className={`flex-1 px-3 space-y-0.5 ${isAdmin ? "pt-5" : (isStaff && !onNewInitiative ? "pt-5" : "")}`}>
         {/* Portal Home Option */}
         <button
           onClick={() => setView("LANDING")}
-          className={`w-full flex items-center space-x-3 px-4 py-3 rounded text-xs uppercase tracking-wider transition-all duration-250 cursor-pointer text-left ${
+          className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-md text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer text-left ${
             currentView === "LANDING"
-              ? themeClasses.activeButton
-              : themeClasses.hoverButton
+              ? `${accentBg} ${accentText} font-bold border-l-4 ${accentBorder}`
+              : "text-[#4F5A6D] hover:bg-[#EBF0F5] hover:text-[#000000]"
           }`}
         >
           <Home className="w-4 h-4" />
           <span>Portal Home</span>
         </button>
   
-        <div className={`h-[1px] my-2 ${themeClasses.divideLine}`}></div>
+        <div className="h-[1px] my-2 bg-[#E2E8F0]"></div>
   
         {menuItems.map((item) => {
           const Icon = item.icon;
@@ -200,10 +183,10 @@ export default function Sidebar({
             <button
               key={item.id}
               onClick={() => setView(item.id)}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded text-xs uppercase tracking-wider transition-all duration-250 cursor-pointer text-left ${
+              className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-md text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer text-left ${
                 isActive
-                  ? themeClasses.activeButton
-                  : themeClasses.hoverButton
+                  ? `${accentBg} ${accentText} font-bold border-l-4 ${accentBorder}`
+                  : "text-[#4F5A6D] hover:bg-[#EBF0F5] hover:text-[#000000]"
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -213,14 +196,14 @@ export default function Sidebar({
         })}
       </nav>
   
-      {/* Bottom section: Settings & Support */}
-      <div className={`p-4 space-y-1 ${themeClasses.bottomSec}`}>
+      {/* ── Bottom section: Settings & Logout ── */}
+      <div className="p-4 space-y-0.5 border-t border-[#E2E8F0]">
         <button
           onClick={() => setView("SETTINGS")}
-          className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded text-xs uppercase tracking-wider transition-all cursor-pointer text-left ${
+          className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-md text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer text-left ${
             currentView === "SETTINGS"
-              ? themeClasses.activeButton
-              : themeClasses.hoverButton
+              ? `${accentBg} ${accentText} font-bold border-l-4 ${accentBorder}`
+              : "text-[#4F5A6D] hover:bg-[#EBF0F5] hover:text-[#000000]"
           }`}
         >
           <Settings className="w-4 h-4" />
@@ -229,22 +212,18 @@ export default function Sidebar({
         {currentUser && (
           <button
             onClick={onLogout}
-            className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded text-xs uppercase tracking-wider transition-all cursor-pointer text-left ${
-              isAdmin 
-                ? "text-red-650 hover:bg-red-500/10" 
-                : "text-red-555 hover:bg-red-500/10"
-            }`}
+            className="w-full flex items-center space-x-3 px-4 py-2.5 rounded-md text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer text-left text-[#C92A2A]/70 hover:bg-[#C92A2A]/5 hover:text-[#C92A2A]"
           >
-            <LogOut className="w-4 h-4 text-red-500" />
+            <LogOut className="w-4 h-4" />
             <span>Logout</span>
           </button>
         )}
       </div>
   
-      {/* Footer label */}
-      <div className={`p-4 text-center ${themeClasses.footerBg}`}>
-        <span className="text-[9px] uppercase tracking-widest font-mono">
-          {isAdmin ? "ADMIN CONTROL CENTER // v1.0.4" : (isStaff ? "STAFF WORKSTATION // v1.0.4" : "District Ledger System")}
+      {/* ── Footer label ── */}
+      <div className="p-4 text-center border-t border-[#E2E8F0] bg-[#F4F6F8]">
+        <span className="text-[9px] uppercase tracking-widest font-mono text-[#4F5A6D]/60">
+          {footerLabel}
         </span>
       </div>
     </div>

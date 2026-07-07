@@ -475,7 +475,14 @@ export default function AuthView({ onLoginSuccess, setView }: AuthViewProps) {
                   </div>
                   <button
                     type="button"
-                    onClick={() => window.location.href = '/api/auth/google'}
+                    onClick={() => {
+                      const backend = window.location.origin.includes("localhost:3000")
+                        ? "http://localhost:5000"
+                        : window.location.origin.includes("127.0.0.1:3000")
+                        ? "http://127.0.0.1:5000"
+                        : "";
+                      window.location.href = `${backend}/api/auth/google`;
+                    }}
                     className="w-full py-3.5 bg-white border border-zinc-200 text-zinc-700 hover:bg-zinc-100 rounded font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-sm cursor-pointer flex items-center justify-center space-x-2"
                   >
                     <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" className="w-4 h-4 mr-2" alt="Google logo" />

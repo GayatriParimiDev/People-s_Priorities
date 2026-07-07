@@ -1,299 +1,545 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { 
   Filter, 
-  Maximize2, 
   MapPin, 
   Layers, 
   Calendar, 
   Activity, 
   CheckCircle,
-  Eye
+  Eye,
+  AlertTriangle,
+  TrendingUp,
+  Terminal,
+  Database,
+  ShieldCheck,
+  AlertCircle,
+  Building,
+  HelpCircle
 } from "lucide-react";
-import { LedgerItem, ThemeStat, ViewState } from "../types";
+import L from "leaflet";
+import { LedgerItem, ThemeStat, ViewState, User } from "../types";
 
 interface DashboardViewProps {
   ledger: LedgerItem[];
   themes: ThemeStat[];
   totalDemands: number;
   setView: (view: ViewState) => void;
+  currentUser: User;
 }
 
-export default function DashboardView({ ledger, themes, totalDemands, setView }: DashboardViewProps) {
-  const [selectedThemeFilter, setSelectedThemeFilter] = useState<string | null>(null);
-  const [hoveredPoint, setHoveredPoint] = useState<LedgerItem | null>(null);
+export default function DashboardView({ ledger, themes, totalDemands, setView, currentUser }: DashboardViewProps) {
+  // Stats states from backend
+  const [stats, setStats] = useState<any>(null);
+  const [biasFlags, setBiasFlags] = useState<any[]>([]);
+  const [anomalies, setAnomalies] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Filter ledger items to plot on the map
-  const filteredMapPoints = selectedThemeFilter 
-    ? ledger.filter(item => item.theme === selectedThemeFilter)
-    : ledger;
+  // Map settings
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstance = useRef<L.Map | null>(null);
+  const geojsonLayerRef = useRef<L.GeoJSON | null>(null);
+  const markersGroupRef = useRef<L.LayerGroup | null>(null);
+  const [mapLayer, setMapLayer] = useState<"complaints" | "population" | "literacy" | "infrastructure">("complaints");
 
-  // Let's compute some nice coordinates scaled onto an SVG container of size 500x400
-  // Soho region bounding box (Lat: 51.508 to 51.517, Long: -0.141 to -0.130)
-  const getMapCoordinates = (lat: number, lng: number) => {
-    const minLat = 51.507;
-    const maxLat = 51.518;
-    const minLng = -0.142;
-    const maxLng = -0.129;
+  // Rollup settings (MP vs MLA segment groupings)
+  const [rollupBySegment, setRollupBySegment] = useState(currentUser.role === "MP");
 
-    // Map to 10% - 90% space inside the SVG
-    const x = 50 + ((lng - minLng) / (maxLng - minLng)) * 400;
-    // SVGs draw from top to bottom, so invert Y
-    const y = 350 - ((lat - minLat) / (maxLat - minLat)) * 300;
+  const token = localStorage.getItem("auth_token");
+  const constituencyId = currentUser.districtId || "74-B";
 
-    return { x, y };
-  };
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const statsRes = await fetch(`/api/proposals/dashboard/stats?constituency_id=${constituencyId}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const biasRes = await fetch(`/api/proposals/dashboard/bias-flags?constituency_id=${constituencyId}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const anomalyRes = await fetch(`/api/ai/anomalies/${constituencyId}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (statsRes.ok) {
+          const statsData = await statsRes.json();
+          setStats(statsData);
+        }
+        if (biasRes.ok) {
+          const biasData = await biasRes.json();
+          setBiasFlags(biasData);
+        }
+        if (anomalyRes.ok) {
+          const anomalyData = await anomalyRes.json();
+          setAnomalies(anomalyData);
+        }
+      } catch (err) {
+        console.error("Error loading dashboard stats and anomalies:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadStats();
+  }, [currentUser]);
+
+  // Leaflet map initialization
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    let lat = 12.971598; // Default Bangalore center
+    let lng = 77.594566;
+    if (ledger && ledger.length > 0) {
+      const validPoints = ledger.filter(item => typeof item.latitude === 'number' && typeof item.longitude === 'number');
+      if (validPoints.length > 0) {
+        lat = validPoints.reduce((sum, item) => sum + item.latitude, 0) / validPoints.length;
+        lng = validPoints.reduce((sum, item) => sum + item.longitude, 0) / validPoints.length;
+      }
+    }
+
+    if (mapInstance.current) {
+      mapInstance.current.setView([lat, lng], 13);
+      return;
+    }
+
+    const map = L.map(mapRef.current).setView([lat, lng], 13);
+    
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    mapInstance.current = map;
+    markersGroupRef.current = L.layerGroup().addTo(map);
+
+    return () => {
+      if (mapInstance.current) {
+        mapInstance.current.remove();
+        mapInstance.current = null;
+      }
+    };
+  }, [ledger]);
+
+  // Update map layer polygons and markers
+  useEffect(() => {
+    if (!mapInstance.current) return;
+
+    // Clear existing GeoJSON layer
+    if (geojsonLayerRef.current) {
+      mapInstance.current.removeLayer(geojsonLayerRef.current);
+    }
+    // Clear markers
+    if (markersGroupRef.current) {
+      markersGroupRef.current.clearLayers();
+    }
+
+    // Generate dynamic polygon features around map center
+    let centerLat = 12.971598;
+    let centerLng = 77.594566;
+    if (ledger && ledger.length > 0) {
+      const validPoints = ledger.filter(item => typeof item.latitude === 'number' && typeof item.longitude === 'number');
+      if (validPoints.length > 0) {
+        centerLat = validPoints.reduce((sum, item) => sum + item.latitude, 0) / validPoints.length;
+        centerLng = validPoints.reduce((sum, item) => sum + item.longitude, 0) / validPoints.length;
+      }
+    }
+
+    const d = 0.015; // offset size
+    const wardPolygons: any = {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "properties": { "name": "Ward Segment A", "complaints": 88, "population": 25000, "literacy": 82 },
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [[
+              [centerLng - d, centerLat + d],
+              [centerLng, centerLat + d],
+              [centerLng, centerLat],
+              [centerLng - d, centerLat],
+              [centerLng - d, centerLat + d]
+            ]]
+          }
+        },
+        {
+          "type": "Feature",
+          "properties": { "name": "Ward Segment B", "complaints": 72, "population": 18000, "literacy": 90 },
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [[
+              [centerLng, centerLat + d],
+              [centerLng + d, centerLat + d],
+              [centerLng + d, centerLat],
+              [centerLng, centerLat],
+              [centerLng, centerLat + d]
+            ]]
+          }
+        },
+        {
+          "type": "Feature",
+          "properties": { "name": "Ward Segment C", "complaints": 94, "population": 30000, "literacy": 74 },
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [[
+              [centerLng - d, centerLat],
+              [centerLng, centerLat],
+              [centerLng, centerLat - d],
+              [centerLng - d, centerLat - d],
+              [centerLng - d, centerLat]
+            ]]
+          }
+        },
+        {
+          "type": "Feature",
+          "properties": { "name": "Ward Segment D", "complaints": 65, "population": 12000, "literacy": 88 },
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [[
+              [centerLng, centerLat],
+              [centerLng + d, centerLat],
+              [centerLng + d, centerLat - d],
+              [centerLng, centerLat - d],
+              [centerLng, centerLat]
+            ]]
+          }
+        }
+      ]
+    };
+
+    // Get color based on layer toggle
+    const getStyleColor = (feature: any) => {
+      const prop = feature.properties;
+      if (mapLayer === "complaints") {
+        return prop.complaints > 85 ? "#ef4444" : prop.complaints > 70 ? "#f97316" : "#eab308";
+      } else if (mapLayer === "population") {
+        return prop.population > 20000 ? "#3b82f6" : "#60a5fa";
+      } else if (mapLayer === "literacy") {
+        return prop.literacy > 85 ? "#10b981" : "#059669";
+      }
+      return "#64748b"; // infrastructure points layer style
+    };
+
+    // Add GeoJSON to Map
+    geojsonLayerRef.current = L.geoJSON(wardPolygons, {
+      style: (feature) => ({
+        fillColor: getStyleColor(feature),
+        fillOpacity: 0.25,
+        color: "#cbd5e1",
+        weight: 1.5
+      }),
+      onEachFeature: (feature, layer) => {
+        const prop = feature.properties;
+        layer.bindPopup(`
+          <div style="font-family: sans-serif; font-size: 11px; color: #1e293b; padding: 4px;">
+            <strong style="font-size: 13px;">${prop.name}</strong>
+            <hr style="margin: 4px 0; border: none; border-top: 1px solid #e2e8f0;"/>
+            Demand Score Density: <strong>${prop.complaints}</strong>
+            <br/>Population: <strong>${prop.population.toLocaleString()}</strong>
+            <br/>Literacy Rate: <strong>${prop.literacy}%</strong>
+          </div>
+        `);
+      }
+    }).addTo(mapInstance.current);
+
+    // 2. Plot infrastructure markers or complaints pin points
+    if (mapLayer === "infrastructure") {
+      const infraPoints = [
+        { lat: 51.5135, lng: -0.1372, name: "Soho Science Secondary Academy", type: "School" },
+        { lat: 51.5112, lng: -0.1345, name: "Soho Primary Health Clinic", type: "Hospital" },
+        { lat: 51.5158, lng: -0.1312, name: "Water Distribution Reservoir", type: "Utility" },
+      ];
+      infraPoints.forEach(p => {
+        const marker = L.circleMarker([p.lat, p.lng], {
+          radius: 7,
+          fillColor: "#3b82f6",
+          color: "#ffffff",
+          weight: 2,
+          fillOpacity: 0.95
+        }).addTo(markersGroupRef.current!);
+        
+        marker.bindPopup(`<strong>${p.name}</strong><br/>Type: ${p.type}`);
+      });
+    } else {
+      // Plot project proposals markers
+      ledger.forEach(item => {
+        const marker = L.circleMarker([item.latitude, item.longitude], {
+          radius: 6,
+          fillColor: item.priorityLevel === "CRITICAL" ? "#ef4444" : "#eab308",
+          color: "#ffffff",
+          weight: 1.5,
+          fillOpacity: 0.9
+        }).addTo(markersGroupRef.current!);
+
+        marker.bindPopup(`
+          <div style="font-family: sans-serif; font-size: 11px;">
+            <strong>${item.title}</strong><br/>
+            Priority: ${item.priorityLevel}<br/>
+            Status: ${item.status}
+          </div>
+        `);
+      });
+    }
+
+  }, [mapLayer, ledger]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-cream">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-ochre mb-3"></div>
+        <span className="font-mono text-xs text-sage uppercase">Synchronizing Command Center...</span>
+      </div>
+    );
+  }
+
+  // WoW spike detector trend calculation mock
+  const trendingTopics = [
+    { category: "Water interlink", increase: "WoW +84%", urgency: "spike" },
+    { category: "Street lighting", increase: "WoW +15%", urgency: "moderate" },
+    { category: "Road potholes", increase: "WoW +42%", urgency: "high" }
+  ];
 
   return (
-    <div className="p-6 md:p-8 space-y-8 bg-navy/40 min-h-screen">
-      {/* Three Top-Tier Analytical Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Card 1: Total Demands */}
-        <div className="bg-cream text-navy border border-sage rounded p-6 flex flex-col justify-between shadow-md relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-          <div className="flex justify-between items-start">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-navy/70">
-              Total Demands Logged
-            </span>
-            <Activity className="w-4 h-4 text-ochre" />
-          </div>
-          <div className="my-6">
-            <h3 className="font-vampiro text-5xl md:text-6xl tracking-tighter text-navy">
-              {totalDemands.toLocaleString()}
-            </h3>
-          </div>
-          {/* Progress Indicator track */}
-          <div className="w-full bg-navy/10 h-1 rounded overflow-hidden">
-            <div className="bg-ochre h-full" style={{ width: "82%" }}></div>
+    <div className="p-6 md:p-8 space-y-8 bg-white min-h-screen text-[#1A1A2E] font-sans">
+      
+      {/* Bias Detection Warning Banner */}
+      {biasFlags.length > 0 && (
+        <div className="border border-[#FF6B9D]/30 bg-[#FF6B9D]/10 p-4 rounded-lg flex items-center space-x-3 text-xs font-mono text-[#FF6B9D] animate-fadeIn font-bold">
+          <AlertCircle className="w-5 h-5 text-[#FF6B9D] shrink-0" />
+          <div>
+            <span className="font-bold uppercase block text-[#FF6B9D]">Bias-Detection Flag: Underserved Areas</span>
+            Historical allocation audit indicates that <strong className="text-[#FF6B9D]">{biasFlags.map(f => f.ward_id).join(", ")}</strong> has top-tercile citizen demands but bottom-tercile funding approvals. Neutralize favoritism warnings active.
           </div>
         </div>
+      )}
 
-        {/* Card 2: Critical Resolutions */}
-        <div className="bg-cream text-navy border border-sage rounded p-6 flex flex-col justify-between shadow-md relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-          <div className="flex justify-between items-start">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-navy/70">
-              Critical Resolutions
-            </span>
-            <CheckCircle className="w-4 h-4 text-coral" />
-          </div>
-          <div className="my-6">
-            <h3 className="font-vampiro text-5xl md:text-6xl tracking-tighter text-navy">
-              384
-            </h3>
-          </div>
-          {/* Progress Indicator track */}
-          <div className="w-full bg-navy/10 h-1 rounded overflow-hidden">
-            <div className="bg-coral h-full" style={{ width: "58%" }}></div>
-          </div>
-        </div>
-
-        {/* Card 3: Pending Allocation */}
-        <div className="bg-cream text-navy border border-sage rounded p-6 flex flex-col justify-between shadow-md relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-          <div className="flex justify-between items-start">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-navy/70">
-              Pending Allocation
-            </span>
-            <span className="font-mono text-xs font-bold text-ochre">USD</span>
-          </div>
-          <div className="my-6">
-            <h3 className="font-vampiro text-5xl md:text-6xl tracking-tighter text-navy">
-              8.4M
-            </h3>
-          </div>
-          {/* Progress Indicator track */}
-          <div className="w-full bg-navy/10 h-1 rounded overflow-hidden">
-            <div className="bg-ochre h-full" style={{ width: "70%" }}></div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Grid Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Demand Hotspot Map Block (Left 2-Columns wide) */}
-        <div className="lg:col-span-2 bg-navy/80 border border-sage/25 rounded flex flex-col justify-between relative overflow-hidden shadow-md">
-          {/* Map Header */}
-          <div className="p-4 border-b border-sage/15 flex items-center justify-between bg-navy">
-            <div className="flex items-center space-x-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-ochre animate-pulse"></span>
-              <h2 className="font-mono text-xs uppercase tracking-widest text-cream">
-                Demand Hotspot Map
-              </h2>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              {/* Clear Filter Indicator */}
-              {selectedThemeFilter && (
-                <button 
-                  onClick={() => setSelectedThemeFilter(null)}
-                  className="font-mono text-[9px] text-sage hover:text-cream border border-sage/30 px-2 py-0.5 rounded uppercase"
-                >
-                  Clear Filter
-                </button>
-              )}
-              <button className="p-1 text-sage hover:text-cream transition-colors" title="Toggle Filters">
-                <Filter className="w-3.5 h-3.5" />
-              </button>
-              <button className="p-1 text-sage hover:text-cream transition-colors" title="Maximize Map View">
-                <Maximize2 className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-
-          {/* Interactive Tactical Map Area */}
-          <div className="relative w-full aspect-video min-h-[350px] bg-neutral-950 flex items-center justify-center">
-            {/* Ambient grid system background */}
-            <div className="absolute inset-0 grid-bg opacity-25"></div>
-
-            {/* Dark Tactical Cartography SVG Drawing (representing Soho Streets and Blocks) */}
-            <svg viewBox="0 0 500 400" className="absolute inset-0 w-full h-full select-none opacity-40 pointer-events-none">
-              {/* Central parks */}
-              <rect x="50" y="50" width="80" height="120" fill="var(--color-sage)" fillOpacity="0.05" stroke="var(--color-sage)" strokeWidth="0.5" />
-              <rect x="350" y="240" width="100" height="90" fill="var(--color-sage)" fillOpacity="0.05" stroke="var(--color-sage)" strokeWidth="0.5" />
-              
-              {/* Arterial main streets */}
-              <line x1="100" y1="0" x2="100" y2="400" stroke="var(--color-sage)" strokeWidth="1" strokeDasharray="5 5" />
-              <line x1="280" y1="0" x2="280" y2="400" stroke="var(--color-sage)" strokeWidth="1.5" />
-              <line x1="420" y1="0" x2="420" y2="400" stroke="var(--color-sage)" strokeWidth="1" />
-
-              <line x1="0" y1="120" x2="500" y2="120" stroke="var(--color-sage)" strokeWidth="1.5" />
-              <line x1="0" y1="260" x2="500" y2="260" stroke="var(--color-sage)" strokeWidth="1" strokeDasharray="3 3" />
-              <line x1="0" y1="340" x2="500" y2="340" stroke="var(--color-sage)" strokeWidth="1" />
-
-              {/* Minor grids */}
-              <line x1="100" y1="120" x2="280" y2="260" stroke="var(--color-sage)" strokeWidth="0.5" />
-              <line x1="280" y1="120" x2="420" y2="260" stroke="var(--color-sage)" strokeWidth="0.5" />
-
-              {/* Bounding box coords */}
-              <text x="12" y="22" fill="var(--color-sage)" fillOpacity="0.3" fontSize="8" fontFamily="monospace">CITIES OF LONDON (E14001055)</text>
-              <text x="12" y="385" fill="var(--color-sage)" fillOpacity="0.3" fontSize="8" fontFamily="monospace">GRID REGION: 74-B // ACTIVE DATASET</text>
-            </svg>
-
-            {/* Glowing Map Hotspots */}
-            <div className="absolute inset-0">
-              {filteredMapPoints.map((item) => {
-                const { x, y } = getMapCoordinates(item.latitude, item.longitude);
-                const isCritical = item.priorityLevel === "CRITICAL";
-                const isElevated = item.priorityLevel === "ELEVATED";
-                
-                let colorClass = "bg-ochre"; // standard
-                if (isCritical) colorClass = "bg-coral"; // coral critical
-                else if (isElevated) colorClass = "bg-cream"; // cream elevated
-
-                return (
-                  <button
-                    key={item.id}
-                    style={{ left: `${x}%`, top: `${y}%` }}
-                    onMouseEnter={() => setHoveredPoint(item)}
-                    onMouseLeave={() => setHoveredPoint(null)}
-                    onClick={() => setView("LEDGER")}
-                    className="absolute -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full flex items-center justify-center cursor-pointer group focus:outline-none z-10"
-                  >
-                    {/* Ring pulsing glow */}
-                    <span className={`absolute inline-flex h-full w-full rounded-full opacity-75 map-point-pulse ${
-                      isCritical ? "bg-coral" : isElevated ? "bg-cream" : "bg-ochre"
-                    }`}></span>
-                    <span className={`relative inline-flex rounded-full h-2.5 w-2.5 border border-navy ${colorClass}`}></span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Dynamic Map Point Tooltip Overlay */}
-            {hoveredPoint && (
-              <div 
-                className="absolute bg-navy border border-sage/40 p-4 rounded shadow-2xl max-w-xs z-20 pointer-events-none"
-                style={{ 
-                  left: `${Math.min(getMapCoordinates(hoveredPoint.latitude, hoveredPoint.longitude).x + 2, 60)}%`, 
-                  top: `${Math.min(getMapCoordinates(hoveredPoint.latitude, hoveredPoint.longitude).y - 12, 65)}%` 
-                }}
-              >
-                <div className="flex justify-between items-center font-mono text-[9px] mb-1.5">
-                  <span className="text-ochre uppercase tracking-widest">{hoveredPoint.id}</span>
-                  <span className="text-sage/70">{hoveredPoint.submissionDate.split(" ")[0]}</span>
-                </div>
-                <h4 className="font-serif text-xs font-bold text-cream mb-1">{hoveredPoint.title}</h4>
-                <p className="text-[10px] text-sage font-sans leading-relaxed truncate mb-2">{hoveredPoint.description}</p>
-                <div className="flex justify-between items-center pt-1.5 border-t border-sage/10 font-mono text-[9px]">
-                  <span className="text-sage/60">RANK: {hoveredPoint.priorityLevel}</span>
-                  <span className="text-emerald-400">STATUS: {hoveredPoint.status}</span>
+      {/* AI Anomaly & Manipulation Alert Card */}
+      {anomalies.length > 0 && (
+        <div className="space-y-3">
+          {anomalies.map((anom, idx) => (
+            <div 
+              key={idx} 
+              className="border border-[#845EC2] bg-[#FDFBF7] p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs font-sans text-[#1A1A2E]"
+            >
+              <div className="flex items-start space-x-3">
+                <AlertCircle className="w-5.5 h-5.5 text-[#845EC2] shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold uppercase block text-[#845EC2] text-[10px] font-mono tracking-wider">
+                    Manipulation Alert // Anomaly Watch Agent
+                  </span>
+                  <h4 className="font-bold text-sm text-[#1A1A2E] mt-0.5">
+                    Coordinated Campaign: {anom.anomaly_type.replace(/_/g, ' ').toUpperCase()}
+                  </h4>
+                  <p className="text-slate-700 mt-1 leading-relaxed font-light">
+                    {anom.explanation}
+                  </p>
                 </div>
               </div>
-            )}
+              <div className="flex flex-col items-end justify-center shrink-0">
+                <span className="bg-[#845EC2] text-white px-2 py-0.5 rounded font-mono font-bold text-[9px] uppercase tracking-wider shadow-sm">
+                  Threat score: {anom.score}%
+                </span>
+                <span className="text-[8px] text-slate-500 font-mono mt-1 font-bold">
+                  Detected: {new Date(anom.timestamp).toLocaleTimeString()}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Top row stats deck */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        
+        {/* Composite Health Gauge (4 cols) */}
+        <div className="lg:col-span-4 bg-[#FDFBF7] text-[#1A1A2E] border border-slate-200 rounded-lg p-6 flex flex-col justify-between shadow-sm relative overflow-hidden">
+          <div className="flex justify-between items-start border-b border-slate-200 pb-2">
+            <span className="font-mono text-[9px] uppercase tracking-widest text-slate-500">Constituency Health Score</span>
+            <Activity className="w-4 h-4 text-[#4ECDC4]" />
           </div>
 
-          {/* Map Footer coordinates readouts */}
-          <div className="p-3 bg-neutral-950 border-t border-sage/15 flex justify-between items-center font-mono text-[9px] text-sage/40">
-            <span className="flex items-center space-x-1.5">
-              <MapPin className="w-3 h-3 text-coral" />
-              <span>LAT: 51.51268° N // LNG: 0.13601° W (DISTRICT CENTER)</span>
-            </span>
-            <span>ACTIVE MARKERS: {filteredMapPoints.length}</span>
+          <div className="my-6 flex flex-col items-center justify-center space-y-2 relative">
+            {/* SVG composite gauge */}
+            <svg viewBox="0 0 100 60" className="w-full max-w-[180px]">
+              <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#e2e8f0" strokeWidth="8" strokeLinecap="round" />
+              <path 
+                d="M 10 50 A 40 40 0 0 1 90 50" 
+                fill="none" 
+                stroke="#FFD93D" 
+                strokeWidth="8" 
+                strokeLinecap="round" 
+                strokeDasharray="125" 
+                strokeDashoffset={125 - (125 * (stats?.healthScore || 75)) / 100}
+              />
+              <text x="50" y="46" textAnchor="middle" className="font-serif text-2xl font-bold" fill="#1A1A2E">
+                {stats?.healthScore || 75}
+              </text>
+              <text x="50" y="58" textAnchor="middle" className="font-mono text-[6px] uppercase tracking-widest" fill="#1A1A2E" opacity="0.6">
+                Score / 100
+              </text>
+            </svg>
+          </div>
+
+          <div className="font-mono text-[10px] text-slate-700 space-y-1.5 border-t border-slate-200 pt-3">
+            <div className="flex justify-between">
+              <span>Unresolved Backlog:</span>
+              <strong className="text-[#1A1A2E]">{stats?.unresolvedCount} projects</strong>
+            </div>
+            <div className="flex justify-between">
+              <span>Average Proposal Age:</span>
+              <strong className="text-[#1A1A2E]">{stats?.avgAgeDays} days</strong>
+            </div>
+            <div className="flex justify-between">
+              <span>Sentiment Trend:</span>
+              <strong className="text-[#95D5B2]">Optimistic</strong>
+            </div>
           </div>
         </div>
 
-        {/* Recurring Themes Panel (Right Block) */}
-        <div className="bg-navy/80 border border-sage/25 rounded flex flex-col justify-between shadow-md relative overflow-hidden">
-          {/* Header */}
-          <div className="p-4 border-b border-sage/15 bg-navy">
-            <h2 className="font-serif text-base font-bold tracking-tight text-cream">
-              Recurring Themes
-            </h2>
+        {/* Live Heatmap display (8 cols) */}
+        <div className="lg:col-span-8 bg-[#FDFBF7] text-[#1A1A2E] border border-slate-200 rounded-lg flex flex-col justify-between shadow-sm overflow-hidden relative">
+          
+          <div className="p-4 border-b border-slate-200 bg-[#FDFBF7] flex justify-between items-center flex-wrap gap-4 z-10">
+            <div>
+              <h2 className="font-serif text-base font-bold tracking-tight text-[#1A1A2E]">Live Demand Heatmap</h2>
+              <span className="text-[9px] font-mono text-slate-500 uppercase">Geographical demand plot // color-coded per ward</span>
+            </div>
+            {/* Layer toggles */}
+            <div className="flex bg-slate-100 border border-slate-200 rounded p-0.5 space-x-1 text-[9px] font-mono font-bold">
+              <button 
+                onClick={() => setMapLayer("complaints")}
+                className={`px-2 py-1 rounded cursor-pointer uppercase ${mapLayer === "complaints" ? "bg-[#4ECDC4] text-[#1A1A2E]" : "text-slate-500 hover:text-[#1A1A2E]"}`}
+              >
+                Complaints
+              </button>
+              <button 
+                onClick={() => setMapLayer("population")}
+                className={`px-2 py-1 rounded cursor-pointer uppercase ${mapLayer === "population" ? "bg-[#4ECDC4] text-[#1A1A2E]" : "text-slate-500 hover:text-[#1A1A2E]"}`}
+              >
+                Density
+              </button>
+              <button 
+                onClick={() => setMapLayer("literacy")}
+                className={`px-2 py-1 rounded cursor-pointer uppercase ${mapLayer === "literacy" ? "bg-[#4ECDC4] text-[#1A1A2E]" : "text-slate-500 hover:text-[#1A1A2E]"}`}
+              >
+                Literacy
+              </button>
+              <button 
+                onClick={() => setMapLayer("infrastructure")}
+                className={`px-2 py-1 rounded cursor-pointer uppercase ${mapLayer === "infrastructure" ? "bg-[#4ECDC4] text-[#1A1A2E]" : "text-slate-500 hover:text-[#1A1A2E]"}`}
+              >
+                Infra points
+              </button>
+            </div>
           </div>
 
-          {/* List of Themes */}
-          <div className="p-6 flex-1 space-y-6">
-            {themes.map((theme, index) => {
-              const isSelected = selectedThemeFilter === theme.name;
-              // Normalize progress percentage relative to maximum count
-              const maxCount = Math.max(...themes.map(t => t.count));
-              const progressPct = maxCount > 0 ? (theme.count / maxCount) * 100 : 0;
+          {/* Leaflet DOM Anchor */}
+          <div ref={mapRef} className="flex-1 min-h-[320px] bg-slate-100 z-0"></div>
 
+          <div className="p-3 bg-white border-t border-slate-200 flex justify-between items-center text-[9px] font-mono text-slate-500">
+            <span>LAT: 51.51268° N // LNG: 0.13601° W (DISTRICT CENTER)</span>
+            <span>ACTIVE SEGMENTS: 4 WARDS</span>
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* Middle row: Category donut breakdown, trending spike panel, pending actions with aging badges */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        {/* Category breakdown */}
+        <div className="bg-[#FDFBF7] text-[#1A1A2E] border border-slate-200 rounded-lg p-6 flex flex-col justify-between shadow-sm">
+          <span className="font-mono text-[9px] uppercase tracking-widest text-slate-500 block border-b border-slate-200 pb-2 font-bold">
+            Proposals Category Breakdown
+          </span>
+
+          <div className="p-4 flex-1 space-y-3 pt-4">
+            {stats?.themesBreakdown.map((theme: any) => {
+              const maxVal = Math.max(...stats.themesBreakdown.map((t: any) => t.count));
+              const pct = maxVal > 0 ? (theme.count / maxVal) * 100 : 0;
               return (
-                <div 
-                  key={theme.id}
-                  onClick={() => setSelectedThemeFilter(isSelected ? null : theme.name)}
-                  className={`group p-3 border rounded transition-all duration-300 cursor-pointer ${
-                    isSelected 
-                      ? "border-ochre bg-ochre/10" 
-                      : "border-sage/15 hover:border-ochre bg-cream/5"
-                  }`}
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <span className="font-mono text-xs text-ochre group-hover:text-cream transition-colors">
-                        {theme.name}
-                      </span>
-                      <p className="text-[10px] text-sage/60 font-mono mt-0.5">
-                        {theme.count} Demands Logged
-                      </p>
-                    </div>
-                    <span className="font-serif text-lg font-bold text-sage/35 group-hover:text-cream transition-colors">
-                      {theme.id}
-                    </span>
+                <div key={theme.id} className="space-y-1">
+                  <div className="flex justify-between text-xs font-mono">
+                    <span className="text-[#4ECDC4] uppercase font-bold">{theme.name}</span>
+                    <span className="text-[#1A1A2E] font-bold">{theme.count}</span>
                   </div>
-
-                  {/* Horizontal Progress Track */}
-                  <div className="w-full bg-navy h-1.5 rounded overflow-hidden">
-                    <div 
-                      className="bg-ochre h-full transition-all duration-500" 
-                      style={{ width: `${progressPct}%` }}
-                    ></div>
+                  <div className="w-full bg-slate-100 h-1.5 rounded overflow-hidden">
+                    <div className="bg-[#4ECDC4] h-full" style={{ width: `${pct}%` }}></div>
                   </div>
                 </div>
               );
             })}
           </div>
+        </div>
 
-          {/* View Full Ledger Button */}
-          <div className="p-4 border-t border-sage/15 bg-navy">
-            <button
-              onClick={() => setView("LEDGER")}
-              className="w-full py-3 bg-cream hover:bg-ochre hover:text-cream text-navy-dark rounded font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow cursor-pointer text-center"
-            >
-              View Full Ledger
-            </button>
+        {/* Spike detector WoW */}
+        <div className="bg-[#FDFBF7] text-[#1A1A2E] border border-slate-200 rounded-lg p-6 flex flex-col justify-between shadow-sm">
+          <div className="border-b border-slate-200 pb-2 flex justify-between items-center">
+            <span className="font-mono text-[9px] uppercase tracking-widest text-slate-500">Trending Spike Detector</span>
+            <TrendingUp className="w-3.5 h-3.5 text-[#FF6B9D]" />
+          </div>
+
+          <div className="flex-1 space-y-4 pt-4 font-mono text-xs">
+            {trendingTopics.map((topic, i) => (
+              <div key={i} className="p-3 bg-white border border-slate-200 rounded flex justify-between items-center shadow-sm">
+                <div>
+                  <span className="text-[#1A1A2E] font-bold block">{topic.category}</span>
+                  <span className="text-[9px] text-slate-500 uppercase font-bold">Sudden Spike alert</span>
+                </div>
+                <span className="px-2.5 py-1 rounded bg-[#FF6B9D]/10 text-[#FF6B9D] font-bold font-mono text-[10px]">
+                  {topic.increase}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
+
+        {/* Pending Actions aging badges */}
+        <div className="bg-[#FDFBF7] text-[#1A1A2E] border border-slate-200 rounded-lg p-6 flex flex-col justify-between shadow-sm">
+          <span className="font-mono text-[9px] uppercase tracking-widest text-slate-500 block border-b border-slate-200 pb-2 font-bold">
+            Pending Action Aging Badges
+          </span>
+
+          <div className="flex-1 overflow-y-auto max-h-[220px] space-y-3 pt-4 scrollbar-thin">
+            {stats?.pendingActions.map((action: any) => (
+              <div key={action.id} className="p-2.5 bg-white border border-slate-200 rounded flex justify-between items-center shadow-sm">
+                <div className="max-w-[70%]">
+                  <h4 className="font-serif text-xs font-bold text-[#1A1A2E] truncate">{action.title}</h4>
+                  <span className="font-mono text-[8px] text-slate-500 uppercase block mt-0.5 font-bold">Category: {action.category}</span>
+                </div>
+                <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold border ${
+                  action.urgency_badge === 'RED' ? 'bg-[#FF6B9D]/10 text-[#FF6B9D] border-[#FF6B9D]/20' :
+                  action.urgency_badge === 'YELLOW' ? 'bg-[#FFA94D]/10 text-[#FFA94D] border-[#FFA94D]/20' :
+                  'bg-[#95D5B2]/10 text-[#95D5B2] border-[#95D5B2]/20'
+                }`}>
+                  {action.age_days}d aging
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
+
+      {/* MP vs MLA constituency rollup options */}
+      {currentUser.role === "MP" && (
+        <div className="border border-slate-200 bg-[#FDFBF7] p-4 rounded-lg flex justify-between items-center flex-wrap gap-4 text-[#1A1A2E] shadow-sm">
+          <div className="flex items-center space-x-2">
+            <Building className="w-5 h-5 text-[#4ECDC4]" />
+            <div>
+              <span className="font-serif text-sm font-bold block text-[#1A1A2E]">Elected Member Rollup Controls</span>
+              <p className="text-[10px] text-slate-600">Group analytics by assembly segments (MLA sub-divisions) within your parliamentary Lok Sabha boundary.</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setRollupBySegment(!rollupBySegment)}
+            className="px-4 py-2 bg-[#4ECDC4] hover:bg-[#4ECDC4]/90 text-[#1A1A2E] rounded font-mono text-xs uppercase tracking-wider font-bold transition-all cursor-pointer shadow border border-slate-200"
+          >
+            {rollupBySegment ? "Disable MLA rollup" : "Rollup by assembly segment"}
+          </button>
+        </div>
+      )}
+
     </div>
   );
 }

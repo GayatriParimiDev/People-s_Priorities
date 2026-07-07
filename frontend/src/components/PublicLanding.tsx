@@ -8,34 +8,34 @@ interface PublicLandingProps {
 }
 
 export default function PublicLanding({ setView, ledger }: PublicLandingProps) {
-  // Take last 3 items for the scrolling ticker
+  // Take last 4 items for the scrolling ticker
   const liveLogs = ledger.slice(0, 4);
 
   return (
-    <div className="min-h-screen bg-navy text-cream">
+    <div className="min-h-screen bg-white text-[#1A1A2E] font-sans">
       {/* Navigation Header */}
-      <header className="border-b border-sage/20 bg-navy sticky top-0 z-50">
+      <header className="border-b border-slate-200 bg-white sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <h1 className="font-vampiro text-2xl tracking-widest text-cream">
+            <h1 className="font-vampiro text-2xl tracking-widest text-[#1A1A2E]">
               PEOPLE'S PRIORITIES
             </h1>
-            <span className="bg-ochre text-cream text-[10px] font-mono px-2 py-0.5 rounded uppercase tracking-wider hidden sm:inline">
+            <span className="bg-[#4ECDC4] text-[#1A1A2E] text-[10px] font-mono px-2 py-0.5 rounded uppercase tracking-wider hidden sm:inline font-bold">
               Civic Ledger v1.0
             </span>
           </div>
 
-          <nav className="hidden md:flex items-center space-x-8 font-mono text-xs uppercase tracking-wider">
-            <button onClick={() => setView("LANDING")} className="text-ochre hover:text-cream transition-all">Principles</button>
-            <button onClick={() => setView("LEDGER")} className="text-sage hover:text-cream transition-all">Ledger</button>
-            <button onClick={() => setView("EVALUATION")} className="text-sage hover:text-cream transition-all">Impact</button>
-            <button onClick={() => setView("SETTINGS")} className="text-sage hover:text-cream transition-all">Network</button>
+          <nav className="hidden md:flex items-center space-x-8 font-mono text-xs uppercase tracking-wider font-bold">
+            <button onClick={() => setView("LANDING")} className="text-[#4ECDC4] hover:text-[#1A1A2E] transition-all">Principles</button>
+            <button onClick={() => setView("LEDGER")} className="text-slate-500 hover:text-[#1A1A2E] transition-all">Ledger</button>
+            <button onClick={() => setView("EVALUATION")} className="text-slate-500 hover:text-[#1A1A2E] transition-all">Impact</button>
+            <button onClick={() => setView("SETTINGS")} className="text-slate-500 hover:text-[#1A1A2E] transition-all">Network</button>
           </nav>
 
           <div>
             <button 
               onClick={() => setView("AUTH")}
-              className="px-5 py-2.5 bg-cream text-navy hover:bg-ochre hover:text-cream transition-all duration-300 font-mono font-bold text-xs uppercase tracking-wider rounded border border-sage/30 shadow-md cursor-pointer"
+              className="px-5 py-2.5 bg-[#1A1A2E] text-white hover:bg-[#4ECDC4] hover:text-[#1A1A2E] transition-all duration-300 font-mono font-bold text-xs uppercase tracking-wider rounded border border-slate-200 shadow-md cursor-pointer"
             >
               Join Assembly
             </button>
@@ -44,23 +44,23 @@ export default function PublicLanding({ setView, ledger }: PublicLandingProps) {
       </header>
 
       {/* Hero Split Frame */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 border-b border-sage/20 min-h-[500px]">
+      <section className="grid grid-cols-1 lg:grid-cols-2 border-b border-slate-200 min-h-[500px]">
         {/* Left Side: Editorial Typography Block */}
-        <div className="p-10 md:p-16 flex flex-col justify-between bg-navy relative overflow-hidden">
+        <div className="p-10 md:p-16 flex flex-col justify-between bg-white relative overflow-hidden">
           {/* Subtle concrete geometric shapes in background */}
           <div className="absolute inset-0 grid-bg opacity-20 pointer-events-none"></div>
           
           <div className="relative z-10">
-            <div className="font-mono text-xs uppercase tracking-widest text-ochre mb-4 flex items-center space-x-2">
-              <span className="w-2 h-2 rounded-full bg-coral animate-pulse"></span>
+            <div className="font-mono text-xs uppercase tracking-widest text-[#4ECDC4] mb-4 flex items-center space-x-2 font-bold">
+              <span className="w-2 h-2 rounded-full bg-[#FF6B9D] animate-pulse"></span>
               <span>Demands Platform Enabled</span>
             </div>
             
-            <h2 className="font-vampiro text-5xl md:text-7xl leading-tight text-cream uppercase tracking-wide">
+            <h2 className="font-vampiro text-5xl md:text-7xl leading-tight text-[#1A1A2E] uppercase tracking-wide">
               VOICE OF <br/>THE PEOPLE
             </h2>
             
-            <p className="mt-8 text-sage text-sm md:text-base font-sans max-w-lg leading-relaxed font-light">
+            <p className="mt-8 text-slate-600 text-sm md:text-base font-sans max-w-lg leading-relaxed font-light">
               A permanent, immutable record of public intent. We translate collective voices into undeniable infrastructural data. This is not a suggestion box; this is the ledger of accountability.
             </p>
           </div>
@@ -68,7 +68,7 @@ export default function PublicLanding({ setView, ledger }: PublicLandingProps) {
           <div className="mt-12 relative z-10">
             <button 
               onClick={() => setView("INTAKE")}
-              className="group flex items-center space-x-3 px-6 py-4 bg-ochre hover:bg-ochre/90 text-cream font-mono font-bold text-xs uppercase tracking-widest rounded border border-sage/30 transition-all cursor-pointer shadow-lg"
+              className="group flex items-center space-x-3 px-6 py-4 bg-[#4ECDC4] hover:bg-[#4ECDC4]/90 text-[#1A1A2E] font-mono font-bold text-xs uppercase tracking-widest rounded border border-slate-200 transition-all cursor-pointer shadow-lg"
             >
               <span>Initialize Citizens Input</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -77,9 +77,9 @@ export default function PublicLanding({ setView, ledger }: PublicLandingProps) {
         </div>
 
         {/* Right Side: Brutalist Concrete Graphic Frame */}
-        <div className="relative bg-neutral-900 overflow-hidden min-h-[350px] lg:min-h-full border-t lg:border-t-0 lg:border-l border-sage/20 flex flex-col justify-end p-8 md:p-12">
+        <div className="relative bg-[#FDFBF7] overflow-hidden min-h-[350px] lg:min-h-full border-t lg:border-t-0 lg:border-l border-slate-200 flex flex-col justify-end p-8 md:p-12">
           {/* Brutalist structure simulator overlay */}
-          <div className="absolute inset-0 bg-navy/30 mix-blend-color-burn z-10 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-[#1A1A2E]/5 mix-blend-color-burn z-10 pointer-events-none"></div>
           
           {/* Architectural Concrete SVG Artwork */}
           <div className="absolute inset-0 bg-cover bg-center z-0 opacity-45 grid-bg" />
@@ -94,14 +94,14 @@ export default function PublicLanding({ setView, ledger }: PublicLandingProps) {
           </svg>
 
           {/* Glowing framing corner widgets */}
-          <div className="absolute top-6 right-6 font-mono text-[9px] text-sage/60 flex flex-col items-end">
+          <div className="absolute top-6 right-6 font-mono text-[9px] text-slate-500 flex flex-col items-end">
             <span>LOC: AUTO_GRID</span>
             <span>ZOOM: 100% // LEVEL 04</span>
           </div>
 
-          <div className="relative z-10 p-6 bg-navy/90 border border-sage/20 backdrop-blur-md rounded max-w-md ml-auto">
-            <h3 className="font-serif text-lg font-bold text-cream mb-2">Architectural Integrity</h3>
-            <p className="text-sage text-xs leading-relaxed font-sans font-light">
+          <div className="relative z-10 p-6 bg-[#FDFBF7] border border-slate-200 backdrop-blur-md rounded max-w-md ml-auto shadow-md">
+            <h3 className="font-serif text-lg font-bold text-[#1A1A2E] mb-2">Architectural Integrity</h3>
+            <p className="text-slate-600 text-xs leading-relaxed font-sans font-light">
               Infrastructural deficits aren't issues of finance; they are errors of visibility. Our AI pipeline maps actual citizen representations directly into public ledgers to dictate state investments.
             </p>
           </div>
@@ -109,15 +109,15 @@ export default function PublicLanding({ setView, ledger }: PublicLandingProps) {
       </section>
 
       {/* Live Scrolling Ticker Banner */}
-      <section className="bg-neutral-200 text-coral mt-12 py-5 px-6 border-b border-sage/20 overflow-hidden relative select-none">
+      <section className="bg-[#FDFBF7] text-[#FF6B9D] mt-12 py-5 px-6 border-y border-slate-200 overflow-hidden relative select-none">
         <div className="flex items-center space-x-6 whitespace-nowrap animate-marquee">
-          <span className="font-mono text-xs font-bold uppercase tracking-wider shrink-0 bg-cream text-navy px-2 py-0.5 rounded">
+          <span className="font-mono text-xs font-bold uppercase tracking-wider shrink-0 bg-[#1A1A2E] text-white px-2 py-0.5 rounded">
             Live Feed
           </span>
-          <div className="flex space-x-12 font-mono text-xs text-coral/95 items-center">
+          <div className="flex space-x-12 font-mono text-xs text-[#FF6B9D] items-center font-bold">
             <span>| Permanent. Public. Immutable. //</span>
             {liveLogs.map((log) => (
-              <span key={log.id} className="hover:text-coral/80 hover:underline transition-all cursor-pointer" onClick={() => setView("LEDGER")}>
+              <span key={log.id} className="hover:text-[#FF6B9D]/85 hover:underline transition-all cursor-pointer" onClick={() => setView("LEDGER")}>
                 LOG #{log.id.replace("LGR-", "")}: {log.title.toUpperCase()} - {log.priorityLevel} //
               </span>
             ))}
@@ -129,52 +129,52 @@ export default function PublicLanding({ setView, ledger }: PublicLandingProps) {
       <section className="max-w-7xl mx-auto px-6 py-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Column 01 */}
-          <div className="bg-navy border border-sage/30 p-8 rounded flex flex-col justify-between group hover:border-ochre transition-all duration-300">
+          <div className="bg-[#FDFBF7] border border-slate-200 p-8 rounded-2xl flex flex-col justify-between group hover:border-[#FF6B9D] transition-all duration-300 shadow-sm">
             <div>
-              <span className="font-vampiro text-5xl text-sage/25 group-hover:text-ochre/35 transition-colors">01</span>
-              <h3 className="font-mono text-sm uppercase tracking-widest text-cream mt-4 mb-3 flex items-center space-x-2">
+              <span className="font-vampiro text-5xl text-[#FF6B9D]/30 group-hover:text-[#FF6B9D]/60 transition-colors">01</span>
+              <h3 className="font-mono text-sm uppercase tracking-widest text-[#1A1A2E] mt-4 mb-3 flex items-center space-x-2 font-bold">
                 <span>Log</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-coral"></span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B9D]"></span>
               </h3>
-              <p className="text-sage text-xs leading-relaxed font-sans font-light">
+              <p className="text-slate-600 text-xs leading-relaxed font-sans font-light">
                 Raw public intake. Every concern, priority, and proposal is securely logged onto the immutable ledger via text representation, photo analysis, or speech transcription.
               </p>
             </div>
-            <div className="mt-8 pt-4 border-t border-sage/10 font-mono text-[10px] text-ochre">
+            <div className="mt-8 pt-4 border-t border-slate-100 font-mono text-[10px] text-[#FF6B9D] font-bold">
               SECURE_SHA256_INTEGRATION
             </div>
           </div>
 
           {/* Column 02 */}
-          <div className="bg-navy border border-sage/30 p-8 rounded flex flex-col justify-between group hover:border-ochre transition-all duration-300">
+          <div className="bg-[#FDFBF7] border border-slate-200 p-8 rounded-2xl flex flex-col justify-between group hover:border-[#845EC2] transition-all duration-300 shadow-sm">
             <div>
-              <span className="font-vampiro text-5xl text-sage/25 group-hover:text-ochre/35 transition-colors">02</span>
-              <h3 className="font-mono text-sm uppercase tracking-widest text-cream mt-4 mb-3 flex items-center space-x-2">
+              <span className="font-vampiro text-5xl text-[#845EC2]/30 group-hover:text-[#845EC2]/60 transition-colors">02</span>
+              <h3 className="font-mono text-sm uppercase tracking-widest text-[#1A1A2E] mt-4 mb-3 flex items-center space-x-2 font-bold">
                 <span>Analyze</span>
-                <Sparkles className="w-3.5 h-3.5 text-ochre" />
+                <Sparkles className="w-3.5 h-3.5 text-[#845EC2] animate-pulse" />
               </h3>
-              <p className="text-sage text-xs leading-relaxed font-sans font-light">
+              <p className="text-slate-600 text-xs leading-relaxed font-sans font-light">
                 AI-driven synthesis identifies structural patterns across constituencies, transforming noisy citizen representations into distinct, quantified, priority-ordered development works.
               </p>
             </div>
-            <div className="mt-8 pt-4 border-t border-sage/10 font-mono text-[10px] text-ochre">
+            <div className="mt-8 pt-4 border-t border-slate-100 font-mono text-[10px] text-[#845EC2] font-bold">
               GEMINI_NEURAL_SYNTHESIS
             </div>
           </div>
 
           {/* Column 03 */}
-          <div className="bg-navy border border-sage/30 p-8 rounded flex flex-col justify-between group hover:border-ochre transition-all duration-300">
+          <div className="bg-[#FDFBF7] border border-slate-200 p-8 rounded-2xl flex flex-col justify-between group hover:border-[#95D5B2] transition-all duration-300 shadow-sm">
             <div>
-              <span className="font-vampiro text-5xl text-sage/25 group-hover:text-ochre/35 transition-colors">03</span>
-              <h3 className="font-mono text-sm uppercase tracking-widest text-cream mt-4 mb-3 flex items-center space-x-2">
+              <span className="font-vampiro text-5xl text-[#95D5B2]/30 group-hover:text-[#95D5B2]/60 transition-colors">03</span>
+              <h3 className="font-mono text-sm uppercase tracking-widest text-[#1A1A2E] mt-4 mb-3 flex items-center space-x-2 font-bold">
                 <span>Act</span>
-                <Lock className="w-3.5 h-3.5 text-coral" />
+                <Lock className="w-3.5 h-3.5 text-[#95D5B2]" />
               </h3>
-              <p className="text-sage text-xs leading-relaxed font-sans font-light">
+              <p className="text-slate-600 text-xs leading-relaxed font-sans font-light">
                 Direct civic impact tracking. Resources are mobilized, and timeline achievements are logged transparently on our public ledger interface for constant constituency auditing.
               </p>
             </div>
-            <div className="mt-8 pt-4 border-t border-sage/10 font-mono text-[10px] text-ochre">
+            <div className="mt-8 pt-4 border-t border-slate-100 font-mono text-[10px] text-[#95D5B2] font-bold">
               AUDITED_LEDGER_LEDGER_v1.0
             </div>
           </div>
@@ -182,14 +182,14 @@ export default function PublicLanding({ setView, ledger }: PublicLandingProps) {
       </section>
 
       {/* Constituency Impact Progress Board */}
-      <section className="bg-gradient-to-b from-navy to-navy/95 border-t border-sage/20 py-20 px-6">
+      <section className="bg-white border-t border-slate-200 py-20 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-vampiro text-3xl md:text-5xl uppercase tracking-wider text-cream">
+            <h2 className="font-vampiro text-3xl md:text-5xl uppercase tracking-wider text-[#1A1A2E]">
               CONSTITUENCY IMPACT
             </h2>
-            <div className="w-24 h-[1px] bg-ochre mx-auto mt-4"></div>
-            <p className="text-sage text-xs font-mono uppercase mt-3 tracking-widest">
+            <div className="w-24 h-[1px] bg-[#4ECDC4] mx-auto mt-4"></div>
+            <p className="text-slate-500 text-xs font-mono uppercase mt-3 tracking-widest">
               Real-time project tracking and verification metrics
             </p>
           </div>
@@ -198,28 +198,28 @@ export default function PublicLanding({ setView, ledger }: PublicLandingProps) {
             {/* Project Card A */}
             <div 
               onClick={() => setView("TIMELINE")}
-              className="bg-navy border border-sage/25 hover:border-ochre p-8 rounded cursor-pointer group transition-all"
+              className="bg-[#FDFBF7] border-2 border-slate-200 hover:border-[#FF6B9D] p-8 rounded-2xl cursor-pointer group transition-all shadow-sm"
             >
               <div className="flex justify-between items-start mb-4">
-                <h3 className="font-serif text-xl font-bold text-cream group-hover:text-ochre transition-colors">
+                <h3 className="font-serif text-xl font-bold text-[#1A1A2E] group-hover:text-[#FF6B9D] transition-colors">
                   Arterial Road Repair
                 </h3>
-                <span className="font-mono text-[10px] border border-coral/50 text-coral px-2 py-0.5 rounded">
+                <span className="font-mono text-[10px] font-bold bg-[#FF6B9D]/10 border border-[#FF6B9D]/20 text-[#FF6B9D] px-2 py-0.5 rounded">
                   CRITICAL
                 </span>
               </div>
-              <p className="text-sage text-xs font-light leading-relaxed mb-6 font-sans">
+              <p className="text-slate-600 text-xs font-light leading-relaxed mb-6 font-sans">
                 Mandate generated from 1,204 citizen logs. Engineering assessment complete, funding allocated, and roadwork actively scheduled.
               </p>
               
               {/* Progress track */}
               <div className="space-y-2">
                 <div className="flex justify-between text-[10px] font-mono">
-                  <span className="text-sage">PHASE 3 // ACTIVE REPAIR</span>
-                  <span className="text-ochre font-bold">75% COMPLETE</span>
+                  <span className="text-slate-500">PHASE 3 // ACTIVE REPAIR</span>
+                  <span className="text-[#FF6B9D] font-bold">75% COMPLETE</span>
                 </div>
-                <div className="w-full bg-navy border border-sage/20 h-2.5 rounded-full overflow-hidden p-[1px]">
-                  <div className="bg-gradient-to-r from-ochre to-coral h-full rounded-full transition-all duration-1000" style={{ width: "75%" }}></div>
+                <div className="w-full bg-slate-100 border border-slate-200 h-2.5 rounded-full overflow-hidden p-[1px]">
+                  <div className="bg-[#FF6B9D] h-full rounded-full transition-all duration-1000" style={{ width: "75%" }}></div>
                 </div>
               </div>
             </div>
@@ -227,28 +227,28 @@ export default function PublicLanding({ setView, ledger }: PublicLandingProps) {
             {/* Project Card B */}
             <div 
               onClick={() => setView("EVALUATION")}
-              className="bg-navy border border-sage/25 hover:border-ochre p-8 rounded cursor-pointer group transition-all"
+              className="bg-[#FDFBF7] border-2 border-slate-200 hover:border-[#FFA94D] p-8 rounded-2xl cursor-pointer group transition-all shadow-sm"
             >
               <div className="flex justify-between items-start mb-4">
-                <h3 className="font-serif text-xl font-bold text-cream group-hover:text-ochre transition-colors">
+                <h3 className="font-serif text-xl font-bold text-[#1A1A2E] group-hover:text-[#FFA94D] transition-colors">
                   Solar Lighting Grid
                 </h3>
-                <span className="font-mono text-[10px] border border-sage/50 text-sage px-2 py-0.5 rounded">
+                <span className="font-mono text-[10px] font-bold bg-[#FFA94D]/10 border border-[#FFA94D]/20 text-[#FFA94D] px-2 py-0.5 rounded">
                   ELEVATED
                 </span>
               </div>
-              <p className="text-sage text-xs font-light leading-relaxed mb-6 font-sans">
+              <p className="text-slate-600 text-xs font-light leading-relaxed mb-6 font-sans">
                 Pilot program initiated across 4 parks. Target: 100% renewable public path illumination by Q4 to decrease safety index deficits.
               </p>
               
               {/* Progress track */}
               <div className="space-y-2">
                 <div className="flex justify-between text-[10px] font-mono">
-                  <span className="text-sage">PHASE 1 // PROCUREMENT</span>
-                  <span className="text-ochre font-bold">25% COMPLETE</span>
+                  <span className="text-slate-500">PHASE 1 // PROCUREMENT</span>
+                  <span className="text-[#FFA94D] font-bold">25% COMPLETE</span>
                 </div>
-                <div className="w-full bg-navy border border-sage/20 h-2.5 rounded-full overflow-hidden p-[1px]">
-                  <div className="bg-gradient-to-r from-ochre to-coral h-full rounded-full transition-all duration-1000" style={{ width: "25%" }}></div>
+                <div className="w-full bg-slate-100 border border-slate-200 h-2.5 rounded-full overflow-hidden p-[1px]">
+                  <div className="bg-[#FFA94D] h-full rounded-full transition-all duration-1000" style={{ width: "25%" }}></div>
                 </div>
               </div>
             </div>
@@ -257,15 +257,15 @@ export default function PublicLanding({ setView, ledger }: PublicLandingProps) {
       </section>
 
       {/* Assembly Invitation Banner CTA */}
-      <section className="bg-navy border-t border-b border-sage/20 py-20 px-6 text-center relative overflow-hidden">
+      <section className="bg-[#FDFBF7] border-t border-b border-slate-200 py-20 px-6 text-center relative overflow-hidden font-sans">
         <div className="absolute inset-0 grid-bg opacity-10 pointer-events-none"></div>
         <div className="max-w-2xl mx-auto relative z-10">
-          <h2 className="font-vampiro text-3xl md:text-5xl text-cream uppercase tracking-widest leading-tight mb-8">
+          <h2 className="font-vampiro text-3xl md:text-5xl text-[#1A1A2E] uppercase tracking-widest leading-tight mb-8">
             READY TO LOG YOUR PRIORITY?
           </h2>
           <button 
             onClick={() => setView("AUTH")}
-            className="px-8 py-4 bg-cream text-navy hover:bg-ochre hover:text-cream transition-all duration-300 font-mono font-bold text-xs uppercase tracking-widest rounded border border-sage/40 shadow-xl cursor-pointer"
+            className="px-8 py-4 bg-[#1A1A2E] text-white hover:bg-[#FF6B9D] hover:text-white transition-all duration-300 font-mono font-bold text-xs uppercase tracking-widest rounded border border-slate-200 shadow-xl cursor-pointer"
           >
             JOIN THE ASSEMBLY
           </button>
@@ -273,20 +273,20 @@ export default function PublicLanding({ setView, ledger }: PublicLandingProps) {
       </section>
 
       {/* Footer */}
-      <footer className="bg-navy border-t border-sage/15 py-12 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between font-mono text-xs text-sage/60 gap-6">
+      <footer className="bg-white border-t border-slate-200 py-12 px-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between font-mono text-xs text-slate-500 gap-6">
           <div className="flex flex-col items-center md:items-start">
-            <span className="font-vampiro text-lg tracking-wider text-cream">PEOPLE'S PRIORITIES</span>
-            <span className="text-[10px] text-sage/40 mt-1 uppercase tracking-widest">© 2026 People's Priorities. A Permanent Public Record.</span>
+            <span className="font-vampiro text-lg tracking-wider text-[#1A1A2E]">PEOPLE'S PRIORITIES</span>
+            <span className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest">© 2026 People's Priorities. A Permanent Public Record.</span>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-wider">
-            <button onClick={() => setView("LANDING")} className="hover:text-cream transition-colors">Charter</button>
-            <button onClick={() => setView("SETTINGS")} className="hover:text-cream transition-colors">Protocol</button>
-            <button onClick={() => setView("LEDGER")} className="hover:text-cream transition-colors">Ledger Access</button>
-            <button onClick={() => setView("SETTINGS")} className="hover:text-cream transition-colors">Governance</button>
-            <button onClick={() => setView("LANDING")} className="hover:text-cream transition-colors">Privacy</button>
-            <button onClick={() => setView("SETTINGS")} className="hover:text-cream transition-colors">Security</button>
+          <div className="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-wider font-bold">
+            <button onClick={() => setView("LANDING")} className="hover:text-[#1A1A2E] transition-colors">Charter</button>
+            <button onClick={() => setView("SETTINGS")} className="hover:text-[#1A1A2E] transition-colors">Protocol</button>
+            <button onClick={() => setView("LEDGER")} className="hover:text-[#1A1A2E] transition-colors">Ledger Access</button>
+            <button onClick={() => setView("SETTINGS")} className="hover:text-[#1A1A2E] transition-colors">Governance</button>
+            <button onClick={() => setView("LANDING")} className="hover:text-[#1A1A2E] transition-colors">Privacy</button>
+            <button onClick={() => setView("SETTINGS")} className="hover:text-[#1A1A2E] transition-colors">Security</button>
           </div>
         </div>
       </footer>

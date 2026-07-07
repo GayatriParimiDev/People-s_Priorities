@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Send, Mic, Image as ImageIcon, Camera, Loader2, Sparkles, MapPin } from "lucide-react";
 import { LedgerItem, ViewState } from "../types";
+import VoiceRecorder from "./VoiceRecorder";
 
 interface IntakeConsoleProps {
   onAddLedgerItem: (item: LedgerItem) => void;
@@ -10,80 +11,11 @@ interface IntakeConsoleProps {
 export default function IntakeConsole({ onAddLedgerItem, setView }: IntakeConsoleProps) {
   const [activeTab, setActiveTab] = useState<"TEXT" | "VOICE" | "PHOTO">("TEXT");
   const [inputText, setInputText] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoDescription, setPhotoDescription] = useState("");
   const [locationStr, setLocationStr] = useState("LOC: AUTO-DETECT (SOHO, DISTRICT 74-B)");
   const [submittedItem, setSubmittedItem] = useState<LedgerItem | null>(null);
-
-  // Web Speech API Ref
-  const recognitionRef = useRef<any>(null);
-
-  useEffect(() => {
-    // Attempt to set up Speech Recognition if supported
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      const rec = new SpeechRecognition();
-      rec.continuous = true;
-      rec.interimResults = false;
-      rec.lang = "en-US";
-      
-      rec.onresult = (event: any) => {
-        const transcript = event.results[event.results.length - 1][0].transcript;
-        setInputText((prev) => prev + (prev ? " " : "") + transcript);
-      };
-
-      rec.onerror = (event: any) => {
-        console.error("Speech Recognition Error:", event.error);
-        setIsRecording(false);
-      };
-
-      rec.onend = () => {
-        setIsRecording(false);
-      };
-
-      recognitionRef.current = rec;
-    }
-  }, []);
-
-  const handleMicToggle = () => {
-    if (!recognitionRef.current) {
-      // Speech recognition not supported or denied. Let's do a cool simulated voice transcription!
-      if (!isRecording) {
-        setIsRecording(true);
-        setInputText("Simulating voice transmission... ");
-        const simulatedPhrases = [
-          "Report of heavy flooding near the Soho square water hydrants. Water is overflowing onto the footpaths.",
-          "Street lighting along Wardour Street is completely inactive, causing hazardous pedestrian traversal at night.",
-          "Severe pavement cracks and potholes logged outside the secondary school gate. Vehicles are swerving to avoid them."
-        ];
-        
-        let index = 0;
-        const interval = setInterval(() => {
-          if (index < simulatedPhrases.length) {
-            setInputText(simulatedPhrases[Math.floor(Math.random() * simulatedPhrases.length)]);
-            index++;
-          } else {
-            setIsRecording(false);
-            clearInterval(interval);
-          }
-        }, 1500);
-      } else {
-        setIsRecording(false);
-      }
-      return;
-    }
-
-    if (isRecording) {
-      recognitionRef.current.stop();
-      setIsRecording(false);
-    } else {
-      setInputText("");
-      recognitionRef.current.start();
-      setIsRecording(true);
-    }
-  };
 
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -211,24 +143,13 @@ export default function IntakeConsole({ onAddLedgerItem, setView }: IntakeConsol
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Condition rendering based on tab */}
                 {activeTab === "VOICE" && (
-                  <div className="flex items-center justify-between p-4 bg-ochre/10 border border-ochre/30 rounded">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-3 h-3 rounded-full ${isRecording ? "bg-red-500 animate-ping" : "bg-red-500/40"}`}></div>
-                      <span className="font-mono text-xs text-sage">
-                        {isRecording ? "TRANSCRIBING AUDIO LIVE..." : "MICROPHONE STANDBY"}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleMicToggle}
-                      className={`p-2.5 rounded-full ${
-                        isRecording ? "bg-red-600 text-white" : "bg-ochre text-cream"
-                      } hover:scale-105 transition-all cursor-pointer`}
-                      title="Toggle Microphone"
-                    >
-                      <Mic className="w-4 h-4" />
-                    </button>
-                  </div>
+                  <VoiceRecorder
+                    onTranscribed={(transcript) => {
+                      setInputText((prev) => prev + (prev ? " " : "") + transcript);
+                    }}
+                    placeholderText="Speak in Hindi, Kannada, Tamil, Marathi, or English to transcribe."
+                    variant="form"
+                  />
                 )}
 
                 {activeTab === "PHOTO" && (

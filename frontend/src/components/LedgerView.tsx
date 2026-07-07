@@ -2,14 +2,9 @@ import React, { useState } from "react";
 import { 
   Search, 
   Filter, 
-  ArrowDownWideNarrow, 
   ChevronDown, 
-  ShieldAlert,
   SlidersHorizontal,
-  ChevronRight,
-  Eye,
   Calendar,
-  X,
   Check,
   RotateCcw
 } from "lucide-react";
@@ -77,48 +72,48 @@ export default function LedgerView({ ledger, setView }: LedgerViewProps) {
     setVisibleCount(prev => prev + 4);
   };
 
-  // Badge stylings
+  // Badge stylings (Clean Light Mode Styles)
   const getPriorityBadgeClass = (priority: string) => {
     switch (priority) {
       case "CRITICAL":
-        return "border border-coral text-coral bg-coral/5 font-bold px-2 py-0.5 rounded text-[10px] tracking-wider";
+        return "border border-rose-200 text-rose-700 bg-rose-50 font-bold px-2 py-0.5 rounded text-[10px] tracking-wider";
       case "ELEVATED":
-        return "border border-ochre text-ochre bg-ochre/5 font-bold px-2 py-0.5 rounded text-[10px] tracking-wider";
+        return "border border-amber-200 text-amber-700 bg-amber-50 font-bold px-2 py-0.5 rounded text-[10px] tracking-wider";
       case "STANDARD":
-        return "border border-sage text-sage bg-sage/5 px-2 py-0.5 rounded text-[10px] tracking-wider";
+        return "border border-slate-200 text-slate-650 bg-slate-50 px-2 py-0.5 rounded text-[10px] tracking-wider";
       case "RESOLVED":
-        return "border border-emerald-500/50 text-emerald-400 bg-emerald-500/5 px-2 py-0.5 rounded text-[10px] tracking-wider";
+        return "border border-emerald-200 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-[10px] tracking-wider font-bold";
       default:
-        return "border border-neutral-600 text-neutral-400 px-2 py-0.5 rounded text-[10px]";
+        return "border border-slate-200 text-slate-500 px-2 py-0.5 rounded text-[10px]";
     }
   };
 
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case "UNDER REVIEW":
-        return "text-sage/80 font-mono text-xs uppercase tracking-wide";
+        return "text-slate-550 font-mono text-xs uppercase tracking-wide";
       case "SCHEDULED":
-        return "text-ochre font-mono text-xs uppercase tracking-wide font-bold";
+        return "text-amber-600 font-mono text-xs uppercase tracking-wide font-bold";
       case "ARCHIVED":
-        return "text-sage/50 font-mono text-xs uppercase tracking-wide";
+        return "text-slate-400 font-mono text-xs uppercase tracking-wide";
       case "CLOSED":
-        return "text-neutral-500 font-mono text-xs uppercase tracking-wide line-through";
+        return "text-neutral-400 font-mono text-xs uppercase tracking-wide line-through";
       case "IN PROGRESS":
-        return "text-emerald-400 font-mono text-xs uppercase tracking-wide animate-pulse font-bold";
+        return "text-emerald-600 font-mono text-xs uppercase tracking-wide animate-pulse font-bold";
       default:
-        return "text-neutral-400 font-mono text-xs";
+        return "text-slate-500 font-mono text-xs";
     }
   };
 
   return (
-    <div className="p-6 md:p-8 space-y-8 bg-navy/40 min-h-screen text-cream">
+    <div className="p-6 md:p-8 space-y-8 bg-white min-h-screen text-slate-850 font-sans">
       
       {/* Title Header Editorial serif */}
-      <div className="border-b border-sage/20 pb-6">
-        <h1 className="font-serif text-4xl md:text-6xl font-bold tracking-tight text-cream uppercase">
+      <div className="border-b border-slate-200 pb-6">
+        <h1 className="font-serif text-4xl md:text-5xl font-bold tracking-tight text-slate-900">
           The Public Ledger
         </h1>
-        <p className="text-sage font-sans text-xs mt-3 tracking-wider leading-relaxed font-light">
+        <p className="text-slate-500 font-sans text-xs mt-3 tracking-wider leading-relaxed font-light">
           Permanent immutable record of civic demands and constituency priorities. Authenticated system access only.
         </p>
       </div>
@@ -128,35 +123,35 @@ export default function LedgerView({ ledger, setView }: LedgerViewProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
           {/* Search Input bar */}
-          <div className="lg:col-span-6 border border-sage/25 bg-navy/60 rounded p-4 flex flex-col justify-between">
-            <span className="font-mono text-[9px] text-sage/50 uppercase tracking-widest block mb-2">
+          <div className="lg:col-span-6 border border-slate-200 bg-slate-50 rounded-xl p-4 flex flex-col justify-between">
+            <span className="font-mono text-[9px] text-slate-450 uppercase tracking-widest block mb-2">
               Search Registry
             </span>
             <div className="relative">
-              <Search className="absolute left-3 top-2.5 w-4 h-4 text-sage/40" />
+              <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Query by ID, Theme, Title, or Keyword..."
-                className="w-full bg-navy border border-sage/20 rounded pl-10 pr-4 py-2 text-xs text-cream outline-none focus:border-ochre font-sans"
+                className="w-full bg-white border border-slate-250 rounded-lg pl-10 pr-4 py-2 text-xs text-slate-800 outline-none focus:border-indigo-600 font-sans shadow-sm"
               />
             </div>
           </div>
 
           {/* Standard Select parameters */}
-          <div className="lg:col-span-4 border border-sage/25 bg-navy/60 rounded p-4 flex flex-col justify-between">
-            <span className="font-mono text-[9px] text-sage/50 uppercase tracking-widest block mb-2">
+          <div className="lg:col-span-4 border border-slate-200 bg-slate-50 rounded-xl p-4 flex flex-col justify-between">
+            <span className="font-mono text-[9px] text-slate-450 uppercase tracking-widest block mb-2">
               Base Parameters
             </span>
             <div className="grid grid-cols-2 gap-4">
               {/* Priority selection */}
               <div>
-                <label className="font-mono text-[9px] text-sage/50 uppercase block mb-1">Priority</label>
+                <label className="font-mono text-[9px] text-slate-450 uppercase block mb-1">Priority</label>
                 <select
                   value={priorityFilter}
                   onChange={(e) => setPriorityFilter(e.target.value)}
-                  className="w-full bg-navy border border-sage/20 rounded px-2.5 py-1.5 text-[10px] text-cream uppercase tracking-wider outline-none font-mono cursor-pointer"
+                  className="w-full bg-white border border-slate-250 rounded-lg px-2.5 py-1.5 text-[10px] text-slate-800 uppercase tracking-wider outline-none font-mono cursor-pointer shadow-sm"
                 >
                   <option value="ALL">All Levels</option>
                   <option value="CRITICAL">Critical</option>
@@ -168,11 +163,11 @@ export default function LedgerView({ ledger, setView }: LedgerViewProps) {
 
               {/* Status Selection */}
               <div>
-                <label className="font-mono text-[9px] text-sage/50 uppercase block mb-1">Status</label>
+                <label className="font-mono text-[9px] text-slate-450 uppercase block mb-1">Status</label>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full bg-navy border border-sage/20 rounded px-2.5 py-1.5 text-[10px] text-cream uppercase tracking-wider outline-none font-mono cursor-pointer"
+                  className="w-full bg-white border border-slate-250 rounded-lg px-2.5 py-1.5 text-[10px] text-slate-800 uppercase tracking-wider outline-none font-mono cursor-pointer shadow-sm"
                 >
                   <option value="ALL">All Status</option>
                   <option value="UNDER REVIEW">Under Review</option>
@@ -190,18 +185,18 @@ export default function LedgerView({ ledger, setView }: LedgerViewProps) {
             <button
               type="button"
               onClick={() => setShowAdvanced(!showAdvanced)}
-              className={`w-full h-full border rounded p-4 flex flex-col items-center justify-center space-y-1.5 transition-all cursor-pointer ${
+              className={`w-full h-full border rounded-xl p-4 flex flex-col items-center justify-center space-y-1.5 transition-all cursor-pointer ${
                 showAdvanced || themeFilter !== "ALL" || startDate || endDate
-                  ? "border-ochre bg-ochre/10 text-cream"
-                  : "border-sage/25 bg-navy/60 text-sage hover:border-ochre hover:text-cream"
+                  ? "border-indigo-600 bg-indigo-50 text-indigo-750 font-bold"
+                  : "border-slate-200 bg-slate-50 text-slate-600 hover:border-indigo-600 hover:text-slate-800 hover:bg-slate-100"
               }`}
             >
-              <SlidersHorizontal className="w-5 h-5" />
+              <SlidersHorizontal className="w-5 h-5 text-indigo-650" />
               <span className="font-mono text-[10px] uppercase tracking-wider font-bold">
                 {showAdvanced ? "Hide Advanced" : "Advanced Filters"}
               </span>
               {(themeFilter !== "ALL" || startDate || endDate) && (
-                <span className="bg-ochre text-cream text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase">
+                <span className="bg-indigo-600 text-white text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase">
                   Active
                 </span>
               )}
@@ -212,33 +207,33 @@ export default function LedgerView({ ledger, setView }: LedgerViewProps) {
 
         {/* Collapsible Advanced Filters Accordion Panel */}
         {showAdvanced && (
-          <div className="border border-ochre/40 bg-neutral-950/40 rounded p-6 space-y-6 animate-fadeIn">
+          <div className="border border-indigo-150 bg-indigo-50/20 rounded-xl p-6 space-y-6 animate-fadeIn">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
               {/* Date range pickers */}
               <div className="space-y-3">
-                <span className="font-mono text-[10px] text-sage/60 uppercase tracking-widest block flex items-center space-x-1">
-                  <Calendar className="w-3.5 h-3.5 text-ochre" />
+                <span className="font-mono text-[10px] text-slate-500 uppercase tracking-widest block flex items-center space-x-1">
+                  <Calendar className="w-3.5 h-3.5 text-indigo-600" />
                   <span>Interactive Date Range Selection</span>
                 </span>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="font-sans text-[10px] text-sage/55 block">Start Date</label>
+                    <label className="font-sans text-[10px] text-slate-500 block">Start Date</label>
                     <input
                       type="date"
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
-                      className="w-full bg-navy border border-sage/20 rounded p-2 text-xs text-cream outline-none font-mono focus:border-ochre"
+                      className="w-full bg-white border border-slate-250 rounded-lg p-2 text-xs text-slate-800 outline-none font-mono focus:border-indigo-600 shadow-sm"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="font-sans text-[10px] text-sage/55 block">End Date</label>
+                    <label className="font-sans text-[10px] text-slate-500 block">End Date</label>
                     <input
                       type="date"
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
-                      className="w-full bg-navy border border-sage/20 rounded p-2 text-xs text-cream outline-none font-mono focus:border-ochre"
+                      className="w-full bg-white border border-slate-250 rounded-lg p-2 text-xs text-slate-800 outline-none font-mono focus:border-indigo-600 shadow-sm"
                     />
                   </div>
                 </div>
@@ -247,13 +242,13 @@ export default function LedgerView({ ledger, setView }: LedgerViewProps) {
               {/* Actions & dynamic counter */}
               <div className="flex flex-col justify-between space-y-4">
                 <div className="space-y-1.5">
-                  <span className="font-mono text-[10px] text-sage/60 uppercase tracking-widest block">
+                  <span className="font-mono text-[10px] text-slate-500 uppercase tracking-widest block">
                     Current Matches
                   </span>
-                  <div className="bg-black/30 border border-sage/15 rounded p-3 text-xs font-mono flex items-center justify-between">
-                    <span className="text-sage/70">Matching Items:</span>
-                    <span className="text-ochre font-bold text-sm">
-                      {filteredLedger.length} <span className="text-xs text-sage/50 font-normal">/ {ledger.length}</span>
+                  <div className="bg-white border border-slate-200 rounded-lg p-3 text-xs font-mono flex items-center justify-between shadow-sm">
+                    <span className="text-slate-500">Matching Items:</span>
+                    <span className="text-indigo-600 font-bold text-sm">
+                      {filteredLedger.length} <span className="text-xs text-slate-400 font-normal">/ {ledger.length}</span>
                     </span>
                   </div>
                 </div>
@@ -262,7 +257,7 @@ export default function LedgerView({ ledger, setView }: LedgerViewProps) {
                   <button
                     type="button"
                     onClick={handleResetFilters}
-                    className="flex-1 py-2.5 bg-neutral-900 hover:bg-neutral-800 border border-sage/20 hover:border-sage/40 text-sage rounded font-mono text-[10px] uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center space-x-1.5"
+                    className="flex-1 py-2.5 bg-white hover:bg-slate-100 border border-slate-250 text-slate-650 rounded-lg font-mono text-[10px] uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center space-x-1.5 shadow-sm"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                     <span>Clear Filters</span>
@@ -270,7 +265,7 @@ export default function LedgerView({ ledger, setView }: LedgerViewProps) {
                   <button
                     type="button"
                     onClick={() => setShowAdvanced(false)}
-                    className="flex-1 py-2.5 bg-ochre hover:bg-ochre/95 text-cream rounded font-mono text-[10px] uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center space-x-1.5"
+                    className="flex-1 py-2.5 bg-indigo-650 hover:bg-indigo-700 text-white rounded-lg font-mono text-[10px] uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center space-x-1.5 shadow-md"
                   >
                     <Check className="w-3.5 h-3.5" />
                     <span>Apply Filters</span>
@@ -281,8 +276,8 @@ export default function LedgerView({ ledger, setView }: LedgerViewProps) {
             </div>
 
             {/* Dynamic Theme selection chips */}
-            <div className="space-y-2.5 pt-4 border-t border-sage/10">
-              <span className="font-mono text-[10px] text-sage/60 uppercase tracking-widest block">
+            <div className="space-y-2.5 pt-4 border-t border-slate-200">
+              <span className="font-mono text-[10px] text-slate-500 uppercase tracking-widest block">
                 Filter by Category Theme
               </span>
               <div className="flex flex-wrap gap-2">
@@ -291,11 +286,11 @@ export default function LedgerView({ ledger, setView }: LedgerViewProps) {
                   onClick={() => setThemeFilter("ALL")}
                   className={`px-3 py-1.5 rounded-full border text-[10px] font-mono uppercase tracking-wider transition-all cursor-pointer flex items-center space-x-1 ${
                     themeFilter === "ALL"
-                      ? "border-ochre bg-ochre/10 text-cream font-bold"
-                      : "border-sage/15 bg-black/10 text-sage hover:border-sage/40 hover:text-cream"
+                      ? "border-indigo-600 bg-indigo-50 text-indigo-750 font-bold"
+                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-800 shadow-sm"
                   }`}
                 >
-                  {themeFilter === "ALL" && <Check className="w-3 h-3 text-ochre" />}
+                  {themeFilter === "ALL" && <Check className="w-3 h-3 text-indigo-600" />}
                   <span>All Themes</span>
                 </button>
 
@@ -306,11 +301,11 @@ export default function LedgerView({ ledger, setView }: LedgerViewProps) {
                     onClick={() => setThemeFilter(theme)}
                     className={`px-3 py-1.5 rounded-full border text-[10px] font-mono uppercase tracking-wider transition-all cursor-pointer flex items-center space-x-1 ${
                       themeFilter === theme
-                        ? "border-ochre bg-ochre/10 text-cream font-bold"
-                        : "border-sage/15 bg-black/10 text-sage hover:border-sage/40 hover:text-cream"
+                        ? "border-indigo-600 bg-indigo-50 text-indigo-750 font-bold"
+                        : "border-slate-200 bg-white text-slate-600 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-800 shadow-sm"
                     }`}
                   >
-                    {themeFilter === theme && <Check className="w-3 h-3 text-ochre" />}
+                    {themeFilter === theme && <Check className="w-3 h-3 text-indigo-600" />}
                     <span>{theme}</span>
                   </button>
                 ))}
@@ -322,10 +317,10 @@ export default function LedgerView({ ledger, setView }: LedgerViewProps) {
       </div>
 
       {/* Main Table Matrix */}
-      <div className="border border-sage/25 bg-navy/80 rounded shadow-lg overflow-x-auto">
+      <div className="border border-slate-200 bg-white rounded-xl shadow-sm overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-sage/20 bg-neutral-950 font-mono text-[10px] text-sage/60 uppercase tracking-wider">
+            <tr className="border-b border-slate-200 bg-slate-50 font-sans text-[10px] text-slate-500 uppercase tracking-wider">
               <th className="py-4 px-6">ID #</th>
               <th className="py-4 px-6">Submission Date</th>
               <th className="py-4 px-6 text-center">Priority Level</th>
@@ -334,10 +329,10 @@ export default function LedgerView({ ledger, setView }: LedgerViewProps) {
               <th className="py-4 px-6 text-center">Auditing</th>
             </tr>
           </thead>
-          <tbody className="font-sans text-xs divide-y divide-sage/15">
+          <tbody className="font-sans text-xs divide-y divide-slate-150">
             {filteredLedger.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-12 text-center text-sage/40 font-mono">
+                <td colSpan={6} className="py-12 text-center text-slate-400 font-mono">
                   NO CORRESPONDING RECORDS SECURED IN LEDGER CHUNK
                 </td>
               </tr>
@@ -345,15 +340,15 @@ export default function LedgerView({ ledger, setView }: LedgerViewProps) {
               filteredLedger.slice(0, visibleCount).map((item) => (
                 <tr 
                   key={item.id} 
-                  className="hover:bg-cream/5 transition-all duration-150 group"
+                  className="hover:bg-slate-50/50 transition-all duration-150 group"
                 >
                   {/* ID */}
-                  <td className="py-4 px-6 font-mono text-xs font-bold text-ochre tracking-wide">
+                  <td className="py-4 px-6 font-mono text-xs font-bold text-indigo-600 tracking-wide">
                     {item.id}
                   </td>
                   
                   {/* Submission Date */}
-                  <td className="py-4 px-6 font-mono text-xs text-sage/80">
+                  <td className="py-4 px-6 font-mono text-xs text-slate-500">
                     {item.submissionDate}
                   </td>
 
@@ -367,10 +362,10 @@ export default function LedgerView({ ledger, setView }: LedgerViewProps) {
                   {/* Theme / Title */}
                   <td className="py-4 px-6">
                     <div className="space-y-0.5">
-                      <span className="font-serif text-sm text-cream font-bold block">
+                      <span className="font-serif text-sm text-slate-850 font-bold block">
                         {item.title}
                       </span>
-                      <p className="text-[10px] text-sage/70 leading-relaxed font-light font-sans max-w-md truncate md:whitespace-normal">
+                      <p className="text-[10px] text-slate-500 leading-relaxed font-light font-sans max-w-md truncate md:whitespace-normal">
                         {item.description}
                       </p>
                     </div>
@@ -387,7 +382,7 @@ export default function LedgerView({ ledger, setView }: LedgerViewProps) {
                   <td className="py-4 px-6 text-center">
                     <button
                       onClick={() => setView("TIMELINE")}
-                      className="px-3 py-1 bg-ochre hover:bg-ochre/90 text-cream rounded font-mono text-[9px] uppercase tracking-wider transition-all cursor-pointer opacity-70 group-hover:opacity-100"
+                      className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-mono text-[9px] uppercase tracking-wider transition-all cursor-pointer opacity-70 group-hover:opacity-100"
                     >
                       Audit
                     </button>
@@ -404,16 +399,16 @@ export default function LedgerView({ ledger, setView }: LedgerViewProps) {
         <div className="text-center pt-4">
           <button
             onClick={handleLoadMore}
-            className="px-6 py-3 border border-sage/30 hover:border-ochre hover:bg-ochre/10 rounded font-mono text-xs uppercase tracking-widest text-cream transition-all cursor-pointer inline-flex items-center space-x-2"
+            className="px-6 py-3 border border-slate-200 hover:border-indigo-600 hover:bg-indigo-50/40 rounded-xl font-mono text-xs uppercase tracking-widest text-slate-700 transition-all cursor-pointer inline-flex items-center space-x-2 shadow-sm"
           >
             <span>Load Older Records</span>
-            <ChevronDown className="w-3.5 h-3.5" />
+            <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
           </button>
         </div>
       )}
 
       {/* Ledger status readout */}
-      <div className="text-center text-[10px] font-mono text-sage/40 uppercase tracking-widest">
+      <div className="text-center text-[10px] font-mono text-slate-400 uppercase tracking-widest">
         End of visible ledger chunk. {14289 + ledger.length} records total in District.
       </div>
 

@@ -8,63 +8,125 @@ import StatusTimeline from "./components/StatusTimeline";
 import LedgerView from "./components/LedgerView";
 import SettingsView from "./components/SettingsView";
 import AuthView from "./components/AuthView";
+import QueueView from "./components/QueueView";
+import AuditTrailView from "./components/AuditTrailView";
+import FundsView from "./components/FundsView";
+import ReportsView from "./components/ReportsView";
+import CitizenPortal from "./components/CitizenPortal";
 import { LedgerItem, ThemeStat, DistrictConfig, ProposalEndorsements, ViewState, User } from "./types";
+
+const viewToPathMap: Record<ViewState, string> = {
+  LANDING: "/",
+  AUTH: "/login",
+  DASHBOARD: "/dashboard",
+  QUEUE: "/queue",
+  AUDIT: "/audit",
+  FUNDS: "/funds",
+  REPORTS: "/reports",
+  INTAKE: "/intake",
+  EVALUATION: "/evaluation",
+  LEDGER: "/ledger",
+  SETTINGS: "/settings",
+  TIMELINE: "/timeline",
+  PROPOSAL_DECISION: "/proposal-decision"
+};
+
+const pathToViewMap: Record<string, ViewState> = {
+  "/": "LANDING",
+  "/login": "AUTH",
+  "/dashboard": "DASHBOARD",
+  "/queue": "QUEUE",
+  "/audit": "AUDIT",
+  "/funds": "FUNDS",
+  "/reports": "REPORTS",
+  "/intake": "INTAKE",
+  "/evaluation": "EVALUATION",
+  "/ledger": "LEDGER",
+  "/settings": "SETTINGS",
+  "/timeline": "TIMELINE",
+  "/proposal-decision": "PROPOSAL_DECISION"
+};
 
 export default function App() {
   // Navigation View State - Defaults to the beautiful Public Landing page
   const [currentView, setView] = useState<ViewState>("LANDING");
-
-  // Route protection and popstate synchronization
-  useEffect(() => {
-    const handlePopState = () => {
-      const path = window.location.pathname;
-      if (path === "/dashboard") {
-        const hasClicked = sessionStorage.getItem("cta_clicked");
-        const token = localStorage.getItem("auth_token");
-        if (hasClicked || token) {
-          setView("DASHBOARD");
-        } else {
-          window.history.replaceState({}, "", "/login");
-          setView("AUTH");
-        }
-      } else if (path === "/login") {
-        setView("AUTH");
-      } else if (path === "/") {
-        setView("LANDING");
-      }
-    };
-
-    handlePopState(); // run initial check
-
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
-
-  const handleLandingNavigate = (view: ViewState) => {
-    if (view === "LANDING") {
-      window.history.pushState({}, "", "/");
-    } else if (view === "AUTH") {
-      window.history.pushState({}, "", "/login");
-    } else {
-      window.history.pushState({}, "", "/dashboard");
-    }
-    setView(view);
-  };
-
-  const handleGeneralNavigate = (view: ViewState) => {
-    if (view === "LANDING") {
-      window.history.pushState({}, "", "/");
-    } else if (view === "AUTH") {
-      window.history.pushState({}, "", "/login");
-    } else {
-      window.history.pushState({}, "", "/dashboard");
-    }
-    setView(view);
-  };
+  const [citizenTab, setCitizenTab] = useState<"dashboard" | "map" | "report" | "polling" | "announcements" | "status_chat">("dashboard");
+  const [auditProposalId, setAuditProposalId] = useState<string | null>(null);
 
   // User Authentication State
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Route protection and popstate synchronization
+  useEffect(() => {
+    if (loading) return;
+
+    const handlePopState = () => {
+      const path = window.location.pathname;
+
+      if (!currentUser) {
+        if (path === "/" || path === "") {
+          setView("LANDING");
+        } else {
+          if (path !== "/login") {
+            window.history.replaceState({}, "", "/login");
+          }
+          setView("AUTH");
+        }
+      } else {
+        if (currentUser.role === "CITIZEN") {
+          if (path.startsWith("/citizen/")) {
+            const tab = path.substring(9);
+            const validTabs = ["dashboard", "map", "report", "polling", "announcements", "status_chat"];
+            if (validTabs.includes(tab)) {
+              setCitizenTab(tab as any);
+            } else {
+              window.history.replaceState({}, "", "/citizen/dashboard");
+              setCitizenTab("dashboard");
+            }
+          } else {
+            window.history.replaceState({}, "", "/citizen/dashboard");
+            setCitizenTab("dashboard");
+          }
+        } else {
+          if (path.startsWith("/citizen/")) {
+            window.history.replaceState({}, "", "/dashboard");
+            setView("DASHBOARD");
+          } else {
+            const mappedView = pathToViewMap[path];
+            if (mappedView) {
+              setView(mappedView);
+            } else {
+              window.history.replaceState({}, "", "/dashboard");
+              setView("DASHBOARD");
+            }
+          }
+        }
+      }
+    };
+
+    handlePopState();
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [currentUser, loading]);
+
+  const handleLandingNavigate = (view: ViewState) => {
+    const path = viewToPathMap[view] || "/";
+    window.history.pushState({}, "", path);
+    setView(view);
+  };
+
+  const handleGeneralNavigate = (view: ViewState) => {
+    const path = viewToPathMap[view] || "/dashboard";
+    window.history.pushState({}, "", path);
+    setView(view);
+  };
+
+  const handleCitizenTabNavigate = (tab: "dashboard" | "map" | "report" | "polling" | "announcements" | "status_chat") => {
+    window.history.pushState({}, "", `/citizen/${tab}`);
+    setCitizenTab(tab);
+  };
 
   // Try to restore user session on initial boot
   useEffect(() => {
@@ -103,6 +165,13 @@ export default function App() {
               districtId: data.user.districtId || prev.districtId
             }));
           }
+
+          // If the user has a valid session, automatically direct to dashboard if on auth/landing
+          const path = window.location.pathname;
+          if (path === "/login" || path === "/") {
+            setView("DASHBOARD");
+            window.history.replaceState({}, "", "/dashboard");
+          }
         } else {
           // Token expired or invalid
           localStorage.removeItem("auth_token");
@@ -116,13 +185,6 @@ export default function App() {
     restoreSession();
   }, []);
 
-  // Redirect to AUTH if trying to access dashboard/admin views without login
-  useEffect(() => {
-    if (!loading && !currentUser && currentView !== "LANDING" && currentView !== "AUTH") {
-      window.history.replaceState({}, "", "/login");
-      setView("AUTH");
-    }
-  }, [loading, currentUser, currentView]);
 
 
   const handleLoginSuccess = (user: User, token: string) => {
@@ -136,6 +198,10 @@ export default function App() {
         districtId: user.districtId || prev.districtId
       }));
     }
+
+    // Automatically route to DASHBOARD on successful login/signup
+    setView("DASHBOARD");
+    window.history.pushState({}, "", "/dashboard");
   };
 
   const handleLogout = async () => {
@@ -207,6 +273,78 @@ export default function App() {
     }
     syncState();
   }, []);
+
+  // Synchronize actual suggestions from database based on user role/constituency
+  useEffect(() => {
+    async function fetchDbSuggestions() {
+      if (!currentUser) return;
+      
+      try {
+        let url = `/api/proposals?constituency_id=${currentUser.districtId || "74-B"}`;
+        
+        const token = localStorage.getItem("auth_token");
+        const res = await fetch(url, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        
+        if (res.ok) {
+          const dbProposals = await res.json();
+          
+          const mapUrgency = (urgency: string): "CRITICAL" | "ELEVATED" | "STANDARD" | "RESOLVED" => {
+            const norm = (urgency || "").toUpperCase();
+            if (norm === "CRITICAL" || norm === "HIGH") return "CRITICAL";
+            if (norm === "ELEVATED" || norm === "MEDIUM") return "ELEVATED";
+            if (norm === "RESOLVED") return "RESOLVED";
+            return "STANDARD";
+          };
+
+          // Map DB suggestions to LedgerItem format
+          const mappedLedger: LedgerItem[] = dbProposals.map((s: any) => {
+            const proposalId = s.proposal_id || "";
+            const created = s.created_at ? new Date(s.created_at) : new Date();
+            const dateStr = !isNaN(created.getTime()) ? created.toISOString() : new Date().toISOString();
+            
+            return {
+              id: proposalId.substring(0, 8).toUpperCase() || "UNKNOWN",
+              submissionDate: dateStr.replace("T", " ").substring(0, 19) + " UTC",
+              priorityLevel: mapUrgency(s.demand_score > 80 ? "CRITICAL" : s.demand_score > 60 ? "ELEVATED" : "STANDARD"),
+              theme: s.category || "General",
+              title: s.title || "Untitled Issue",
+              status: s.status === "proposed" ? "UNDER REVIEW" : s.status === "under_review" ? "UNDER REVIEW" : s.status === "approved" ? "IN PROGRESS" : "ARCHIVED",
+              description: s.description || "",
+              latitude: parseFloat(s.latitude) || 12.97,
+              longitude: parseFloat(s.longitude) || 77.59,
+              signatures: s.demand_score_breakdown?.complaint_count || 1,
+              verificationStatus: s.status === "proposed" ? "Verified" : "Audited"
+            };
+          });
+
+          setLedger(mappedLedger);
+
+          // Update themes count dynamically based on the actual DB suggestions
+          const themeCounts: Record<string, number> = {};
+          mappedLedger.forEach(item => {
+            themeCounts[item.theme] = (themeCounts[item.theme] || 0) + 1;
+          });
+
+          const updatedThemes = Object.entries(themeCounts).map(([name, count], i) => ({
+            id: String(i + 1).padStart(2, "0"),
+            name,
+            count
+          }));
+          
+          if (updatedThemes.length > 0) {
+            setThemes(updatedThemes);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to sync database suggestions:", err);
+      }
+    }
+    fetchDbSuggestions();
+  }, [currentUser]);
 
   // Update configuration
   const handleUpdateConfig = (newConfig: DistrictConfig) => {
@@ -286,8 +424,22 @@ export default function App() {
     return <AuthView setView={handleGeneralNavigate} onLoginSuccess={handleLoginSuccess} />;
   }
 
+  // Redirect logged-in citizens to their own dedicated community portal
+  if (currentUser.role === "CITIZEN") {
+    return (
+      <CitizenPortal 
+        currentUser={currentUser} 
+        onLogout={handleLogout} 
+        activeTab={citizenTab}
+        setActiveTab={handleCitizenTabNavigate}
+      />
+    );
+  }
+
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-navy text-cream">
+    <div className={`flex h-screen w-screen overflow-hidden ${
+      currentUser.role === "ADMINISTRATOR" ? "bg-emerald-50/10 text-emerald-950 font-mono" : "bg-white text-black"
+    }`}>
       {/* Global persistent Sidebar layout */}
       <Sidebar 
         currentView={currentView} 
@@ -300,7 +452,7 @@ export default function App() {
       />
 
       {/* Main viewport area */}
-      <main className="flex-1 overflow-y-auto bg-slate-900/10">
+      <main className="flex-1 overflow-y-auto bg-slate-100/50">
         <div className="max-w-7xl mx-auto">
           {currentView === "INTAKE" && (
             <IntakeConsole 
@@ -315,6 +467,7 @@ export default function App() {
               themes={themes} 
               totalDemands={1492 + ledger.length}
               setView={handleGeneralNavigate} 
+              currentUser={currentUser}
             />
           )}
 
@@ -333,6 +486,39 @@ export default function App() {
             <LedgerView 
               ledger={ledger} 
               setView={handleGeneralNavigate} 
+            />
+          )}
+
+          {currentView === "QUEUE" && (
+            <QueueView 
+              currentUser={currentUser} 
+              setView={handleGeneralNavigate}
+              onSelectProposalForAudit={(id) => {
+                setAuditProposalId(id);
+                handleGeneralNavigate("AUDIT");
+              }}
+            />
+          )}
+
+          {currentView === "AUDIT" && (
+            <AuditTrailView 
+              currentUser={currentUser} 
+              selectedProposalId={auditProposalId}
+              setView={handleGeneralNavigate}
+            />
+          )}
+
+          {currentView === "FUNDS" && (
+            <FundsView 
+              currentUser={currentUser} 
+              setView={handleGeneralNavigate}
+            />
+          )}
+
+          {currentView === "REPORTS" && (
+            <ReportsView 
+              currentUser={currentUser} 
+              setView={handleGeneralNavigate}
             />
           )}
 

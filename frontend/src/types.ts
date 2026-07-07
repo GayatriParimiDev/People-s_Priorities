@@ -38,7 +38,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: "MP" | "ADMINISTRATOR" | "CITIZEN";
+  role: "MP" | "MLA" | "STAFF" | "VERIFICATION_OFFICER" | "ADMINISTRATOR" | "CITIZEN";
   districtId?: string;
   office?: string;
   avatarUrl?: string;
@@ -49,7 +49,12 @@ export type ViewState =
   | "AUTH"
   | "INTAKE"
   | "DASHBOARD"
+  | "QUEUE"
+  | "AUDIT"
+  | "FUNDS"
+  | "REPORTS"
+  | "SETTINGS"
   | "EVALUATION"
   | "TIMELINE"
   | "LEDGER"
-  | "SETTINGS";
+  | "PROPOSAL_DECISION";

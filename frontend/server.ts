@@ -3,6 +3,7 @@ import path from "path";
 import dotenv from "dotenv";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
+import multer from "multer";
 
 dotenv.config();
 
@@ -10,6 +11,114 @@ const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+
+const upload = multer({ storage: multer.memoryStorage() });
+
+// Transcription endpoint using Gemini
+app.post('/api/transcribe', upload.single('audio'), async (req: any, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No audio file received" });
+    }
+
+    const base64Audio = req.file.buffer.toString("base64");
+    const mimeType = req.file.mimetype || "audio/webm";
+
+    const ai = getGeminiClient();
+    if (!ai) {
+      return res.status(500).json({ error: "Gemini API client not configured" });
+    }
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: [
+        {
+          parts: [
+            {
+              text: "Transcribe this audio exactly as spoken. The speaker may be using Hindi, English, or a regional Indian language, or a mix. Return ONLY the transcript text, then on a new line write 'LANGUAGE: ' followed by the detected language name. No other commentary.",
+            },
+            {
+              inlineData: {
+                mimeType: mimeType,
+                data: base64Audio,
+              },
+            },
+          ],
+        },
+      ],
+    });
+
+    const text = response.text || "";
+    const [transcriptPart, languagePart] = text.split("LANGUAGE:");
+
+    res.json({
+      transcript: transcriptPart?.trim() || "",
+      detectedLanguage: languagePart?.trim() || "unknown",
+    });
+  } catch (err: any) {
+    console.error("Transcription error in dev server:", err);
+    res.status(500).json({ error: "Transcription failed" });
+  }
+});
+
+// Proxy requests to the real backend running on port 5000 (Vite proxy doesn't work in middlewareMode)
+app.use('/api', async (req, res, next) => {
+  const path = req.path;
+  const backendPaths = [
+    '/auth',
+    '/suggestions',
+    '/ai',
+    '/data-integration',
+    '/ranking',
+    '/proposals',
+    '/funds',
+    '/scheme-match',
+    '/reports',
+    '/ledger',
+    '/user'
+  ];
+  const shouldForward = backendPaths.some(p => path.startsWith(p));
+  if (!shouldForward) {
+    return next();
+  }
+
+  try {
+    const targetUrl = `http://localhost:5000/api${req.originalUrl.substring(4)}`;
+    
+    const headers: Record<string, string> = {};
+    for (const [key, val] of Object.entries(req.headers)) {
+      if (val !== undefined && key !== 'host' && key !== 'content-length') {
+        headers[key] = Array.isArray(val) ? val.join(', ') : String(val);
+      }
+    }
+
+    const fetchOptions: RequestInit = {
+      method: req.method,
+      headers: headers,
+      body: ['POST', 'PUT', 'PATCH'].includes(req.method) ? JSON.stringify(req.body) : undefined
+    };
+
+    const backendRes = await fetch(targetUrl, fetchOptions);
+    const contentType = backendRes.headers.get('content-type');
+
+    res.status(backendRes.status);
+    
+    backendRes.headers.forEach((val, key) => {
+      res.setHeader(key, val);
+    });
+
+    if (contentType && contentType.includes('application/json')) {
+      const json = await backendRes.json();
+      res.json(json);
+    } else {
+      const text = await backendRes.text();
+      res.send(text);
+    }
+  } catch (err: any) {
+    console.error('Error forwarding request to backend:', err.message);
+    res.status(500).json({ error: 'Gateway Error: Failed to reach backend API' });
+  }
+});
 
 // Lazy-loaded Gemini AI client to prevent startup crashes when API key is missing
 let aiClient: GoogleGenAI | null = null;
@@ -489,7 +598,7 @@ app.post("/api/ledger/endorse", (req, res) => {
   proposalEndorsements.alphaPercent = Math.round((proposalEndorsements.alphaCount / total) * 1000) / 10;
   proposalEndorsements.betaPercent = Math.round((proposalEndorsements.betaCount / total) * 1000) / 10;
   
-  res.json(proposalEndorsements);
+  res.json({ endorsements: proposalEndorsements });
 });
 
 app.post("/api/ledger/submit", async (req, res) => {
@@ -512,7 +621,7 @@ app.post("/api/ledger/submit", async (req, res) => {
   if (ai) {
     try {
       const response = await ai.models.generateContent({
-        model: "gemini-3.5-flash",
+        model: "gemini-2.0-flash",
         contents: `Analyze the following citizen constituency demand submission and extract structure details.
 Input Type: ${type}
 Submission Text/Description: "${text}"
@@ -649,7 +758,7 @@ async function startServer() {
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://0.0.0.0:${PORT}`);
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
   });
 }
 

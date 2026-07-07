@@ -1,0 +1,38 @@
+- [x] Step 1: Define the data schema for development requests (Citizen submissions) and MP/MLA project priorities in the backend database.
+- [x] Step 2: Create API endpoints for MPs/MLAs to view, filter, and sort aggregated citizen feedback and development requests.
+- [x] Step 3: Implement the backend logic to categorize and cluster incoming requests using NLP (e.g., identifying recurring themes like "road repair," "school upgrade," "water supply").
+- [x] Step 4: Develop an integration layer to fetch and merge public datasets (demographics, infrastructure gaps) with the categorized citizen feedback.
+- [x] Step 5: Build the MP/MLA dashboard frontend to visualize demand hotspots using maps and charts.
+- [x] Step 6: Implement a ranking algorithm in the backend that weighs citizen demand against infrastructure data to suggest priority projects.
+- [x] Step 7: Create an interface for MPs/MLAs to approve, reject, or comment on specific development proposals surfaced by the AI.
+- [x] Step 8: Implement secure authentication and role-based access control (RBAC) to ensure only authorized MP/MLA staff can access the portal.
+- [x] Step 9: Configure environment variables in the backend `.env` file for AI service keys (e.g., OpenAI/LLM API) and database connections.
+- [x] Step 10: Conduct end-to-end testing of the feedback-to-priority workflow, ensuring data privacy and accurate representation of citizen needs.
+- [x] Step 11: Implement MP/MLA-specific notification system for new high-priority development requests.
+- [x] Step 12: Develop reporting module for MPs/MLAs to export project priority summaries for legislative or administrative review.
+- [x] Step 13: Ensure all UI/UX components for the MP/MLA dashboard are isolated from the user-facing portal codebase to prevent cross-contamination.
+- [x] Step 14: Update database connection strings in the backend to explicitly use `sslmode=verify-full` to resolve the `pg` library security warning.
+- [x] Step 15: Implement dynamic port configuration in `src/index.js` using `process.env.PORT` with a fallback to 5000 to prevent `EADDRINUSE` errors.
+- [x] Step 16: Add a utility script or logic to check for existing processes on the target port and terminate them before server startup during development.
+- [x] Step 17: Investigate Vite HMR (Hot Module Replacement) configuration to ensure the WebSocket port (24678) is correctly exposed and not blocked by firewall or proxy settings.
+- [x] Step 18: Verify Vite `server.hmr` settings in `vite.config.js` to ensure the client correctly resolves the host and port for WebSocket connections.
+- [x] Step 19: Clear Vite cache (`node_modules/.vite`) and rebuild dependencies to resolve potential source map and dependency fetch errors.
+- [x] Step 20: Check for port conflicts or service overlaps on port 24678 that might be causing the WebSocket connection interruption.
+- [x] Step 21: Debug the login failure by inspecting backend authentication logs and frontend network requests (checking for 401/403/500 errors).
+- [x] Step 22: Audit the current database schema against the authentication requirements to identify any missing columns or structural discrepancies.
+- [x] Step 23: Create an `alteration.sql` file containing all necessary SQL queries to apply required schema changes in a single execution.
+- [x] Step 24: Execute the `alteration.sql` script to update the database.
+- [x] Step 25: Perform end-to-end authentication testing on both frontend and backend using the three established demo accounts.
+- [x] Step 26: Investigate the frontend login state management to identify why the UI remains in the "authenticating" state despite a successful backend response.
+- [x] Step 27: Implement proper navigation logic (e.g., React Router `useNavigate` or state-based redirection) to ensure the user is redirected upon successful authentication.
+- [x] Step 28: Add error handling in the frontend login component to display feedback if the authentication process hangs or fails to trigger the redirect.
+- [x] Step 29: Update `vite.config.js` to explicitly set `server.hmr.clientPort` to 443 or the public-facing port if behind a proxy to resolve WebSocket connection failures.
+- [x] Step 30: Verify if the browser is attempting to connect to `localhost` while the application is served over a different domain/IP, and adjust `server.hmr.host` accordingly.
+- [x] Step 31: Check for CORS or Content Security Policy (CSP) headers that might be blocking WebSocket connections to `ws://localhost:24678/`.
+- [x] Step 32: Test HMR functionality in a different browser to isolate if the issue is specific to Firefox's security handling of local WebSocket connections.
+- [x] Step 33: Identify and terminate all active backend server processes.
+- [x] Step 34: Identify and terminate all active frontend development server processes.
+- [x] Step 35: Inspect the "suggested logins" UI component to identify the event handler responsible for populating credentials.
+- [x] Step 36: Debug the credential injection logic to ensure it correctly updates the state of the login form fields.
+- [x] Step 37: Verify that the sample login credentials match the current backend authentication requirements and user roles.
+- [x] Step 38: Implement a trigger or manual validation step to ensure the form submission is correctly initiated after the sample credentials are populated.

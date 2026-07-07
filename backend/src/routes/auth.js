@@ -5,6 +5,7 @@ import {
   googleCallback, 
   mockLogin,
   login,
+  signup,
   getMe,
   logout,
   updateProfile
@@ -26,6 +27,9 @@ router.get('/mock', mockLogin);
 
 // POST standard credentials/seed login
 router.post('/login', login);
+
+// POST standard signup
+router.post('/signup', signup);
 
 // GET currently logged-in user profile
 router.get('/me', getMe);

@@ -1,55 +1,80 @@
 import React, { useState } from "react";
 import { 
-  Mail, 
-  Lock, 
-  User, 
-  Shield, 
   Building2, 
+  Info, 
+  Key, 
+  Lock, 
+  Mail, 
+  Shield, 
+  User, 
   Map, 
-  Key,
-  Sparkles,
   ArrowRight,
-  CheckCircle2,
   AlertTriangle,
-  Info
+  CheckCircle2
 } from "lucide-react";
-import { motion } from "motion/react";
-import { User as UserType, ViewState } from "../types";
+import { User as UserType } from "../types";
 
 interface AuthViewProps {
-  setView: (view: ViewState) => void;
   onLoginSuccess: (user: UserType, token: string) => void;
+  setView: (view: any) => void;
 }
 
-export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
+export default function AuthView({ onLoginSuccess, setView }: AuthViewProps) {
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
-  
-  // Form states
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [role, setRole] = useState<"MP" | "ADMINISTRATOR">("MP");
-  const [districtId, setDistrictId] = useState("74-B");
-  const [office, setOffice] = useState("Infrastructural Oversight");
-
-  // Feedback states
+  const [role, setRole] = useState<"MP" | "MLA" | "ADMINISTRATOR">("MP");
+  const [districtId, setDistrictId] = useState("");
+  const [office, setOffice] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Password strength logic
-  const getPasswordStrength = () => {
-    if (password.length === 0) return { label: "", color: "bg-neutral-800", percent: 0 };
-    if (password.length < 6) return { label: "Weak", color: "bg-red-500", percent: 33 };
-    const hasLetters = /[a-zA-Z]/.test(password);
-    const hasNumbers = /[0-9]/.test(password);
-    if (hasLetters && hasNumbers) {
-      return { label: "Strong & Secured", color: "bg-emerald-500", percent: 100 };
+  const [constituencies, setConstituencies] = useState<any[]>([]);
+  const [states, setStates] = useState<string[]>([]);
+  const [selectedState, setSelectedState] = useState("");
+
+  React.useEffect(() => {
+    async function fetchConsts() {
+      try {
+        const res = await fetch("/api/proposals/constituencies");
+        if (res.ok) {
+          const data = await res.json();
+          setConstituencies(data);
+          const uniqueStates = Array.from(new Set(data.map((c: any) => c.state))) as string[];
+          setStates(uniqueStates);
+          if (uniqueStates.length > 0) {
+            setSelectedState(uniqueStates[0]);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching constituencies:", err);
+      }
     }
-    return { label: "Moderate", color: "bg-yellow-500", percent: 66 };
+    fetchConsts();
+  }, []);
+
+  const availableConsts = constituencies.filter(c => 
+    c.state === selectedState && 
+    c.constituency_type.toLowerCase() === role.toLowerCase()
+  );
+
+  const calculatePasswordStrength = (pass: string) => {
+    if (!pass) return { label: "Weak", color: "bg-red-500", percent: 10 };
+    let score = 0;
+    if (pass.length > 6) score += 1;
+    if (pass.length > 10) score += 1;
+    if (/[A-Z]/.test(pass)) score += 1;
+    if (/[0-9]/.test(pass)) score += 1;
+    if (/[^A-Za-z0-9]/.test(pass)) score += 1;
+
+    if (score <= 2) return { label: "Weak", color: "bg-red-500", percent: 25 };
+    if (score <= 4) return { label: "Moderate", color: "bg-amber-500", percent: 60 };
+    return { label: "Strong", color: "bg-emerald-500", percent: 100 };
   };
 
-  const passwordStrength = getPasswordStrength();
+  const passwordStrength = calculatePasswordStrength(password);
 
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,194 +82,204 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
     setSuccess(null);
     setLoading(true);
 
-    if (!email || !password) {
-      setError("Email and password fields are required");
-      setLoading(false);
-      return;
-    }
-
-    if (activeTab === "signup" && !name) {
-      setError("Please provide your full identity name");
-      setLoading(false);
-      return;
-    }
-
-    const url = activeTab === "login" ? "/api/auth/login" : "/api/auth/signup";
-    const body = activeTab === "login" 
+    const payload = activeTab === "login" 
       ? { email, password }
-      : { email, password, name, role, districtId, office };
+      : { email, password, name, role: role.toLowerCase(), districtId, office };
+
+    const endpoint = activeTab === "login" ? "/api/auth/login" : "/api/auth/register";
 
     try {
-      const res = await fetch(url, {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
+        body: JSON.stringify(payload)
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "An authentication exception occurred");
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Authentication failed");
       }
 
-      setSuccess(activeTab === "login" ? "Identity secured. Access granted." : "Registration secured. Assembly access established.");
-      
-      // Delay slightly for visual satisfaction
-      setTimeout(() => {
+      if (activeTab === "login") {
+        localStorage.setItem("auth_token", data.token);
         onLoginSuccess(data.user, data.token);
-        setView("DASHBOARD");
-      }, 800);
-
+      } else {
+        setSuccess("Registration secure. Proceed to sign in.");
+        setActiveTab("login");
+        setPassword("");
+        setLoading(false);
+      }
     } catch (err: any) {
-      setError(err.message || "Unable to reach security gateway");
-    } finally {
+      setError(err.message || "Failed to contact authorization server.");
       setLoading(false);
     }
   };
 
-  // Quick fill seed accounts
-  const fillSeedCredential = (type: "mp" | "admin" | "citizen") => {
+  const fillSeedCredential = (type: "mp" | "mla" | "staff" | "admin" | "citizen") => {
     if (type === "mp") {
       setEmail("mp@assembly.gov");
       setPassword("password123");
-      setActiveTab("login");
+    } else if (type === "mla") {
+      setEmail("mla@assembly.gov");
+      setPassword("password123");
+    } else if (type === "staff") {
+      setEmail("staff@assembly.gov");
+      setPassword("password123");
     } else if (type === "admin") {
       setEmail("admin@assembly.gov");
       setPassword("password123");
-      setActiveTab("login");
     } else {
       setEmail("citizen@assembly.gov");
       setPassword("password123");
-      setActiveTab("login");
     }
+    setActiveTab("login");
+    setError(null);
+    setSuccess(null);
   };
 
   return (
-    <div className="min-h-screen bg-navy flex flex-col items-center justify-center p-6 text-cream font-sans selection:bg-ochre selection:text-cream">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-black font-sans selection:bg-ochre selection:text-white">
       
       {/* Decorative Brand Header */}
       <div className="mb-8 text-center max-w-md">
-        <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-ochre bg-ochre/10 px-3 py-1 rounded-full border border-ochre/20 inline-block mb-3">
+        <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-ochre bg-ochre/10 px-3 py-1 rounded-full border border-ochre/25 inline-block mb-3">
           Authenticated Assembly Hub
         </span>
-        <h1 className="font-serif text-3xl md:text-4xl font-bold tracking-tight text-cream uppercase">
+        <h1 className="font-serif text-3xl md:text-4xl font-bold tracking-tight text-black uppercase">
           District Legislative Gate
         </h1>
-        <p className="text-sage text-xs mt-2 font-light leading-relaxed">
+        <p className="text-zinc-600 text-xs mt-2 font-light leading-relaxed">
           Secure, verified node for Members of Parliament and Assembly Administrators. Check parameters, audit ledger logs, and endorse public initiatives.
         </p>
       </div>
 
-      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch relative z-10">
         
-        {/* Left column: Information & Roles Panel (Light Theme styled) */}
-        <div className="lg:col-span-5 bg-navy text-cream border border-sage/40 rounded p-8 flex flex-col justify-between space-y-8 shadow-2xl">
+        {/* Left column: Brand Context card (Colored block, white text) */}
+        <div className="lg:col-span-5 bg-[#FDFBF7] border border-slate-200 rounded-lg p-8 shadow-2xl flex flex-col justify-between space-y-8 text-[#1A1A2E]">
           <div>
-            <h2 className="font-serif text-xl font-bold text-cream mb-4 uppercase tracking-wide border-b border-cream/10 pb-2">
+            <h2 className="font-serif text-xl font-bold text-[#1A1A2E] mb-4 uppercase tracking-wide border-b border-slate-200 pb-2">
               Assembly System Roles
             </h2>
             
             <div className="space-y-5">
               {/* MP Role Details */}
               <div className="space-y-1">
-                <div className="flex items-center space-x-2 text-ochre">
-                  <Shield className="w-4 h-4 text-amber-700" />
-                  <h3 className="font-mono text-xs uppercase tracking-wider font-bold text-cream">
+                <div className="flex items-center space-x-2 text-[#4ECDC4]">
+                  <Shield className="w-4 h-4 text-[#4ECDC4]" />
+                  <h3 className="font-mono text-xs uppercase tracking-wider font-bold text-[#1A1A2E]">
                     Member of Parliament (MP)
                   </h3>
                 </div>
-                <p className="text-cream/70 text-xs font-light leading-relaxed pl-6">
+                <p className="text-slate-600 text-xs font-light leading-relaxed pl-6">
                   Assigned to represent individual districts. Empowered to submit verified local initiatives, vote on public proposals, and monitor constituent sentiments.
                 </p>
                 <div className="pl-6 flex flex-wrap gap-1.5 mt-1">
-                  <span className="bg-amber-100 text-amber-800 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-amber-200">Endorse Proposals</span>
-                  <span className="bg-amber-100 text-amber-800 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-amber-200">Submit Initiatives</span>
+                  <span className="bg-slate-100 text-[#1A1A2E] text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-slate-250 font-bold">Endorse Proposals</span>
+                  <span className="bg-slate-100 text-[#1A1A2E] text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-slate-250 font-bold">Submit Initiatives</span>
                 </div>
               </div>
 
               {/* Administrator Role Details */}
               <div className="space-y-1">
-                <div className="flex items-center space-x-2 text-coral">
-                  <Building2 className="w-4 h-4 text-red-700" />
-                  <h3 className="font-mono text-xs uppercase tracking-wider font-bold text-cream">
+                <div className="flex items-center space-x-2 text-[#FF6B9D]">
+                  <Building2 className="w-4 h-4 text-[#FF6B9D]" />
+                  <h3 className="font-mono text-xs uppercase tracking-wider font-bold text-[#1A1A2E]">
                     Assembly Administrator
                   </h3>
                 </div>
-                <p className="text-cream/70 text-xs font-light leading-relaxed pl-6">
+                <p className="text-slate-600 text-xs font-light leading-relaxed pl-6">
                   Regulates technical and physical state limits. Audits permanent immutable record entries, configures district-wide MFA and logging parameters, and updates archives.
                 </p>
                 <div className="pl-6 flex flex-wrap gap-1.5 mt-1">
-                  <span className="bg-red-100 text-red-800 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-red-200">Audit Records</span>
-                  <span className="bg-red-100 text-red-800 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-red-200">Configure Security</span>
+                  <span className="bg-slate-100 text-[#1A1A2E] text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-slate-250 font-bold">Audit Records</span>
+                  <span className="bg-slate-100 text-[#1A1A2E] text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-slate-250 font-bold">Configure Security</span>
                 </div>
               </div>
 
               {/* Citizen / User Role Details */}
               <div className="space-y-1">
-                <div className="flex items-center space-x-2 text-indigo-600">
-                  <User className="w-4 h-4 text-indigo-700" />
-                  <h3 className="font-mono text-xs uppercase tracking-wider font-bold text-cream">
+                <div className="flex items-center space-x-2 text-[#FFD93D]">
+                  <User className="w-4 h-4 text-[#FFD93D]" />
+                  <h3 className="font-mono text-xs uppercase tracking-wider font-bold text-[#1A1A2E]">
                     Citizen / Public User
                   </h3>
                 </div>
-                <p className="text-cream/70 text-xs font-light leading-relaxed pl-6">
-                  Standard constituents who can check personal engagement metrics, submit new legislative suggestions, and track their participation score.
+                <p className="text-slate-600 text-xs font-light leading-relaxed pl-6">
+                  Standard engagement profile. Submits complaints, track milestones, signs public verification ledgers, and participates in local prioritization surveys.
                 </p>
                 <div className="pl-6 flex flex-wrap gap-1.5 mt-1">
-                  <span className="bg-indigo-100 text-indigo-800 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-indigo-200">Submit Suggestions</span>
-                  <span className="bg-indigo-100 text-indigo-800 text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-indigo-200">Track Engagement</span>
+                  <span className="bg-slate-100 text-[#1A1A2E] text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-slate-250 font-bold">Submit Grievance</span>
+                  <span className="bg-slate-100 text-[#1A1A2E] text-[9px] font-mono uppercase px-2 py-0.5 rounded border border-slate-250 font-bold">Track Engagement</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Quick-Access seed panel (Light Theme styled) */}
-          <div className="bg-cream/5 border border-cream/10 rounded p-4 font-mono text-[11px] space-y-3">
-            <div className="flex items-center space-x-2 text-cream">
-              <Key className="w-3.5 h-3.5 text-amber-700" />
-              <span className="uppercase tracking-wider font-bold text-cream">Legislative Seed Bypass</span>
+          {/* Quick-Access seed panel (Inside dark block, text is white) */}
+          <div className="bg-white border border-slate-200 rounded p-4 font-mono text-[11px] space-y-3 text-[#1A1A2E] shadow-sm">
+            <div className="flex items-center space-x-2 text-[#1A1A2E]">
+              <Key className="w-3.5 h-3.5 text-[#4ECDC4]" />
+              <span className="uppercase tracking-wider font-bold text-[#1A1A2E]">Legislative Seed Bypass</span>
             </div>
-            <p className="text-cream/60 font-sans text-[10px] leading-relaxed">
+            <p className="text-slate-500 font-sans text-[10px] leading-relaxed">
               Use these pre-authorized accounts to immediately verify specific permission matrices:
             </p>
-            <div className="grid grid-cols-3 gap-2 mt-1 text-center">
+            <div className="grid grid-cols-2 gap-2 mt-1 text-center">
               <button 
+                type="button"
                 onClick={() => fillSeedCredential("mp")}
-                className="py-2 px-1 bg-cream hover:bg-ochre text-navy rounded border border-cream/15 text-[10px] uppercase tracking-wide font-bold transition-all cursor-pointer font-sans"
+                className="py-2 px-1 bg-white hover:bg-[#4ECDC4] text-[#1A1A2E] hover:text-[#1A1A2E] rounded border border-slate-250 text-[10px] uppercase tracking-wide font-bold transition-all cursor-pointer font-sans shadow-sm"
               >
                 Sign In MP
               </button>
               <button 
+                type="button"
+                onClick={() => fillSeedCredential("mla")}
+                className="py-2 px-1 bg-white hover:bg-[#4ECDC4] text-[#1A1A2E] hover:text-[#1A1A2E] rounded border border-slate-250 text-[10px] uppercase tracking-wide font-bold transition-all cursor-pointer font-sans shadow-sm"
+              >
+                Sign In MLA
+              </button>
+              <button 
+                type="button"
+                onClick={() => fillSeedCredential("staff")}
+                className="py-2 px-1 bg-white hover:bg-[#4ECDC4] text-[#1A1A2E] hover:text-[#1A1A2E] rounded border border-slate-250 text-[10px] uppercase tracking-wide font-bold transition-all cursor-pointer font-sans shadow-sm"
+              >
+                Sign In Staff
+              </button>
+              <button 
+                type="button"
                 onClick={() => fillSeedCredential("admin")}
-                className="py-2 px-1 bg-cream hover:bg-coral text-navy rounded border border-cream/15 text-[10px] uppercase tracking-wide font-bold transition-all cursor-pointer font-sans"
+                className="py-2 px-1 bg-white hover:bg-coral text-black hover:text-white rounded border border-white/15 text-[10px] uppercase tracking-wide font-bold transition-all cursor-pointer font-sans"
               >
                 Sign In Admin
               </button>
               <button 
+                type="button"
                 onClick={() => fillSeedCredential("citizen")}
-                className="py-2 px-1 bg-cream hover:bg-indigo-600 text-navy rounded border border-cream/15 text-[10px] uppercase tracking-wide font-bold transition-all cursor-pointer font-sans"
+                className="py-2 px-1 bg-white hover:bg-sky-600 text-black hover:text-white rounded border border-white/15 text-[10px] uppercase tracking-wide font-bold transition-all cursor-pointer font-sans col-span-2"
               >
                 Sign Citizen
               </button>
             </div>
-            <div className="text-[10px] text-center text-cream/50 font-mono">
-              Universal Password: <span className="text-cream/80 font-bold">password123</span>
+            <div className="text-[10px] text-center text-white/50 font-mono">
+              Universal Password: <span className="text-white/80 font-bold">password123</span>
             </div>
           </div>
         </div>
 
         {/* Right column: Interactive Form Panel */}
-        <div className="lg:col-span-7 bg-cream text-navy border border-sage rounded p-8 shadow-2xl flex flex-col justify-between">
+        <div className="lg:col-span-7 bg-zinc-50 text-black border border-zinc-200 rounded p-8 shadow-2xl flex flex-col justify-between">
           <div>
             {/* Header Tabs */}
-            <div className="flex border-b border-navy/10 mb-6">
+            <div className="flex border-b border-zinc-200 mb-6">
               <button
                 type="button"
                 onClick={() => { setActiveTab("login"); setError(null); }}
                 className={`flex-1 pb-3 text-center font-mono text-xs uppercase tracking-widest font-bold border-b-2 transition-all cursor-pointer ${
                   activeTab === "login" 
-                    ? "border-navy text-navy" 
-                    : "border-transparent text-navy/40 hover:text-navy/70"
+                    ? "border-black text-black" 
+                    : "border-transparent text-zinc-400 hover:text-zinc-700"
                 }`}
               >
                 Secure Sign In
@@ -254,8 +289,8 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
                 onClick={() => { setActiveTab("signup"); setError(null); }}
                 className={`flex-1 pb-3 text-center font-mono text-xs uppercase tracking-widest font-bold border-b-2 transition-all cursor-pointer ${
                   activeTab === "signup" 
-                    ? "border-navy text-navy" 
-                    : "border-transparent text-navy/40 hover:text-navy/70"
+                    ? "border-black text-black" 
+                    : "border-transparent text-zinc-400 hover:text-zinc-700"
                 }`}
               >
                 Register Account
@@ -264,13 +299,13 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
 
             {/* Error & Success Feedback banners */}
             {error && (
-              <div className="mb-5 p-3.5 bg-red-100 border border-red-300 rounded text-red-700 flex items-start space-x-2.5 font-sans text-xs">
+              <div className="mb-5 p-3.5 bg-red-50 border border-red-300 rounded text-red-700 flex items-start space-x-2.5 font-sans text-xs">
                 <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                 <span>{error}</span>
               </div>
             )}
             {success && (
-              <div className="mb-5 p-3.5 bg-emerald-100 border border-emerald-300 rounded text-emerald-800 flex items-start space-x-2.5 font-sans text-xs">
+              <div className="mb-5 p-3.5 bg-emerald-50 border border-emerald-300 rounded text-emerald-800 flex items-start space-x-2.5 font-sans text-xs">
                 <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600" />
                 <span className="font-bold">{success}</span>
               </div>
@@ -282,16 +317,16 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
               {/* Identity Name (Signup only) */}
               {activeTab === "signup" && (
                 <div className="space-y-1">
-                  <label className="font-mono text-[10px] text-navy/60 uppercase tracking-wider block">Full Identity Name</label>
+                  <label className="font-mono text-[10px] text-zinc-500 uppercase tracking-wider block">Full Identity Name</label>
                   <div className="relative">
-                    <User className="absolute left-3 top-3 w-4 h-4 text-navy/40" />
+                    <User className="absolute left-3 top-3 w-4 h-4 text-zinc-400" />
                     <input
                       type="text"
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g. Councilor Eleanor Vance"
-                      className="w-full bg-navy/5 border border-navy/15 rounded py-2.5 pl-10 pr-4 text-xs text-navy outline-none focus:border-ochre font-sans"
+                      className="w-full bg-white border border-zinc-200 rounded py-2.5 pl-10 pr-4 text-xs text-black outline-none focus:border-ochre font-sans"
                     />
                   </div>
                 </div>
@@ -299,16 +334,16 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
 
               {/* Email Address */}
               <div className="space-y-1">
-                <label className="font-mono text-[10px] text-navy/60 uppercase tracking-wider block">Authorized Email Address</label>
+                <label className="font-mono text-[10px] text-zinc-500 uppercase tracking-wider block">Authorized Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 w-4 h-4 text-navy/40" />
+                  <Mail className="absolute left-3 top-3 w-4 h-4 text-zinc-400" />
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="e.g. representative@assembly.gov"
-                    className="w-full bg-navy/5 border border-navy/15 rounded py-2.5 pl-10 pr-4 text-xs text-navy outline-none focus:border-ochre font-sans"
+                    className="w-full bg-white border border-zinc-200 rounded py-2.5 pl-10 pr-4 text-xs text-black outline-none focus:border-ochre font-sans"
                   />
                 </div>
               </div>
@@ -316,7 +351,7 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
               {/* Password */}
               <div className="space-y-1">
                 <div className="flex justify-between items-center">
-                  <label className="font-mono text-[10px] text-navy/60 uppercase tracking-wider block">Secured Password</label>
+                  <label className="font-mono text-[10px] text-zinc-500 uppercase tracking-wider block">Secured Password</label>
                   {activeTab === "signup" && password.length > 0 && (
                     <span className="text-[10px] font-mono font-bold text-ochre">
                       {passwordStrength.label}
@@ -324,20 +359,20 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
                   )}
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-3 w-4 h-4 text-navy/40" />
+                  <Lock className="absolute left-3 top-3 w-4 h-4 text-zinc-400" />
                   <input
                     type="password"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full bg-navy/5 border border-navy/15 rounded py-2.5 pl-10 pr-4 text-xs text-navy outline-none focus:border-ochre font-sans"
+                    className="w-full bg-white border border-zinc-200 rounded py-2.5 pl-10 pr-4 text-xs text-black outline-none focus:border-ochre font-sans"
                   />
                 </div>
 
                 {/* Password Strength bar indicator */}
                 {activeTab === "signup" && password.length > 0 && (
-                  <div className="w-full bg-neutral-200 h-1 rounded overflow-hidden mt-1.5 transition-all">
+                  <div className="w-full bg-zinc-200 h-1 rounded overflow-hidden mt-1.5 transition-all">
                     <div 
                       className={`h-full transition-all duration-300 ${passwordStrength.color}`} 
                       style={{ width: `${passwordStrength.percent}%` }}
@@ -348,47 +383,71 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
 
               {/* Role Selection (Signup only) */}
               {activeTab === "signup" && (
-                <div className="grid grid-cols-2 gap-4 pt-2">
+                <div className="grid grid-cols-1 gap-4 pt-2">
                   <div className="space-y-1">
-                    <label className="font-mono text-[10px] text-navy/60 uppercase tracking-wider block">Designated Role</label>
+                    <label className="font-mono text-[10px] text-zinc-500 uppercase tracking-wider block">Designated Role</label>
                     <select
                       value={role}
-                      onChange={(e) => setRole(e.target.value as any)}
-                      className="w-full bg-navy/5 border border-navy/15 rounded px-2.5 py-2.5 text-xs text-navy outline-none font-mono tracking-wider cursor-pointer font-bold"
+                      onChange={(e) => {
+                        const newRole = e.target.value as any;
+                        setRole(newRole);
+                        setDistrictId("");
+                      }}
+                      className="w-full bg-white border border-zinc-200 rounded px-2.5 py-2.5 text-xs text-black outline-none font-mono tracking-wider cursor-pointer font-bold"
                     >
-                      <option value="MP">MP (Representative)</option>
+                      <option value="MP">MP (Parliament Representative)</option>
+                      <option value="MLA">MLA (Assembly Representative)</option>
                       <option value="ADMINISTRATOR">Administrator</option>
                     </select>
                   </div>
 
-                  {/* Contextual Input (District for MP, Office for Admin) */}
-                  {role === "MP" ? (
-                    <div className="space-y-1">
-                      <label className="font-mono text-[10px] text-navy/60 uppercase tracking-wider block">Represented District</label>
-                      <div className="relative">
-                        <Map className="absolute left-3 top-3 w-3.5 h-3.5 text-navy/40" />
-                        <input
-                          type="text"
-                          required
+                  {role !== "ADMINISTRATOR" ? (
+                    <>
+                      <div className="space-y-1">
+                        <label className="font-mono text-[10px] text-zinc-500 uppercase tracking-wider block">Select State/UT</label>
+                        <select
+                          value={selectedState}
+                          onChange={(e) => {
+                            setSelectedState(e.target.value);
+                            setDistrictId("");
+                          }}
+                          className="w-full bg-white border border-zinc-200 rounded px-2.5 py-2.5 text-xs text-black outline-none font-sans cursor-pointer font-bold"
+                        >
+                          {states.map(s => (
+                            <option key={s} value={s}>{s}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="font-mono text-[10px] text-zinc-500 uppercase tracking-wider block">
+                          Represented {role === "MP" ? "Lok Sabha" : "Vidhan Sabha"} Constituency
+                        </label>
+                        <select
                           value={districtId}
                           onChange={(e) => setDistrictId(e.target.value)}
-                          placeholder="e.g. 74-B"
-                          className="w-full bg-navy/5 border border-navy/15 rounded py-2.5 pl-9 pr-4 text-xs text-navy outline-none focus:border-ochre font-mono font-bold uppercase"
-                        />
+                          required
+                          className="w-full bg-white border border-zinc-200 rounded px-2.5 py-2.5 text-xs text-black outline-none font-sans cursor-pointer font-bold"
+                        >
+                          <option value="">-- Choose Constituency --</option>
+                          {availableConsts.map(c => (
+                            <option key={c.id} value={c.name}>{c.name}</option>
+                          ))}
+                        </select>
                       </div>
-                    </div>
+                    </>
                   ) : (
                     <div className="space-y-1">
-                      <label className="font-mono text-[10px] text-navy/60 uppercase tracking-wider block">Assigned Office</label>
+                      <label className="font-mono text-[10px] text-zinc-500 uppercase tracking-wider block">Assigned Office</label>
                       <div className="relative">
-                        <Building2 className="absolute left-3 top-3 w-3.5 h-3.5 text-navy/40" />
+                        <Building2 className="absolute left-3 top-3 w-3.5 h-3.5 text-zinc-400" />
                         <input
                           type="text"
                           required
                           value={office}
                           onChange={(e) => setOffice(e.target.value)}
                           placeholder="e.g. Fiscal Auditing"
-                          className="w-full bg-navy/5 border border-navy/15 rounded py-2.5 pl-9 pr-4 text-xs text-navy outline-none focus:border-ochre font-sans"
+                          className="w-full bg-white border border-zinc-200 rounded py-2.5 pl-9 pr-4 text-xs text-black outline-none focus:border-ochre font-sans"
                         />
                       </div>
                     </div>
@@ -396,28 +455,28 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
                 </div>
               )}
 
-              {/* Action Button */}
+              {/* Action Button &mdash; Colored background, white text */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-6 py-3.5 bg-navy hover:bg-ochre text-cream rounded font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-md cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-50"
+                className="w-full mt-6 py-3.5 bg-ochre hover:bg-ochre/90 text-white rounded font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-md cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-50"
               >
                 <span>{loading ? "Authenticating Identity..." : activeTab === "login" ? "Verify Security Key" : "Secure Registration"}</span>
-                {!loading && <ArrowRight className="w-4 h-4" />}
+                {!loading && <ArrowRight className="w-4 h-4 text-white" />}
               </button>
 
               {/* Google Login button for users */}
               {activeTab === "login" && (
                 <>
                   <div className="relative flex py-4 items-center">
-                    <div className="flex-grow border-t border-cream/10"></div>
-                    <span className="flex-shrink mx-4 text-cream/40 font-mono text-[9px] uppercase tracking-wider">or sign in with</span>
-                    <div className="flex-grow border-t border-cream/10"></div>
+                    <div className="flex-grow border-t border-zinc-200"></div>
+                    <span className="flex-shrink mx-4 text-zinc-400 font-mono text-[9px] uppercase tracking-wider">or sign in with</span>
+                    <div className="flex-grow border-t border-zinc-200"></div>
                   </div>
                   <button
                     type="button"
                     onClick={() => window.location.href = '/api/auth/google'}
-                    className="w-full py-3.5 bg-white border border-cream/15 text-cream hover:bg-neutral-50 rounded font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-sm cursor-pointer flex items-center justify-center space-x-2"
+                    className="w-full py-3.5 bg-white border border-zinc-200 text-zinc-700 hover:bg-zinc-100 rounded font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-sm cursor-pointer flex items-center justify-center space-x-2"
                   >
                     <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" className="w-4 h-4 mr-2" alt="Google logo" />
                     <span>Sign in with Google</span>
@@ -429,7 +488,7 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
           </div>
 
           {/* Privacy Note */}
-          <div className="mt-8 pt-4 border-t border-navy/10 flex items-center space-x-2 text-[10px] text-navy/50 font-sans leading-relaxed">
+          <div className="mt-8 pt-4 border-t border-zinc-200 flex items-center space-x-2 text-[10px] text-zinc-500 font-sans leading-relaxed">
             <Info className="w-4 h-4 text-ochre shrink-0" />
             <span>
               All legislative actions, logins, and settings updates are permanently audited into the district immutable timeline registries.
@@ -444,7 +503,7 @@ export default function AuthView({ setView, onLoginSuccess }: AuthViewProps) {
       <div className="mt-8">
         <button 
           onClick={() => setView("LANDING")}
-          className="text-xs font-mono uppercase tracking-widest text-sage hover:text-cream transition-all cursor-pointer underline underline-offset-4"
+          className="text-xs font-mono uppercase tracking-widest text-zinc-500 hover:text-black transition-all cursor-pointer underline underline-offset-4"
         >
           Return to Portal Landing
         </button>

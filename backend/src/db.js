@@ -8,12 +8,9 @@ const { Pool } = pg;
 // Connection Pool Configuration
 // Neon DB requires SSL connections. In node-postgres, we pass an ssl object.
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATABASE_URL + (process.env.DATABASE_URL.includes('?') ? '&' : '?') + 'sslmode=verify-full',
   ssl: {
-    // rejectUnauthorized is set to false to accommodate environments 
-    // that don't have the certificate authority locally, but you can configure
-    // this with certificates in production if needed.
-    rejectUnauthorized: false
+    rejectUnauthorized: true
   }
 });
 

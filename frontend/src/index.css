@@ -1,20 +1,35 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --navy: #FCFAF6;          /* main panel background - originally #071D32 */
-  --navy-dark: #F4F1EA;     /* body background - originally #0A2947 */
-  --cream: #081E34;         /* text color - originally #F3E4C9 */
-  --sage: #4E5E6C;          /* border / secondary text color - originally #D3D4C0 */
-  --ochre: #8B5E3C;         /* brand accent brown - originally #8B5E3C */
-  --coral: #D05A3F;         /* orange accent - originally #D05A3F */
+  /* Floral Base Palette */
+  --base-white: #FFFFFF;
+  --base-ivory: #FDFBF7;
+  --text-dark: #1A1A2E; /* Dark navy for text readability */
+  
+  /* The Flower Accents */
+  --peony-pink: #FF6B9D;
+  --marigold-orange: #FFA94D;
+  --jade-teal: #4ECDC4;
+  --orchid-violet: #845EC2;
+  --leaf-green: #95D5B2;
+  --sunflower-yellow: #FFD93D;
+  
+  /* Fallbacks for existing layout selectors */
+  --navy: var(--text-dark);
+  --navy-dark: var(--base-white);
+  --cream: var(--text-dark);
+  --sage: #5C6370;
+  --ochre: var(--jade-teal);
+  --coral: var(--peony-pink);
 }
 
 @theme {
-  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Playfair Display", "Cinzel", Georgia, serif;
+  --font-sans: "Noto Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Space Grotesk", Georgia, serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-  --font-vampiro: var(--font-sans);
+  --font-vampiro: var(--font-display);
   
   --color-navy: var(--navy);
   --color-navy-dark: var(--navy-dark);
@@ -22,6 +37,25 @@
   --color-sage: var(--sage);
   --color-ochre: var(--ochre);
   --color-coral: var(--coral);
+  
+  --color-base-white: var(--base-white);
+  --color-base-ivory: var(--base-ivory);
+  --color-text-dark: var(--text-dark);
+  
+  --color-peony-pink: var(--peony-pink);
+  --color-marigold-orange: var(--marigold-orange);
+  --color-jade-teal: var(--jade-teal);
+  --color-orchid-violet: var(--orchid-violet);
+  --color-leaf-green: var(--leaf-green);
+  --color-sunflower-yellow: var(--sunflower-yellow);
+  
+  /* Map old token names for fallback compatibility */
+  --color-ink-navy: var(--text-dark);
+  --color-paper-warm: var(--base-ivory);
+  --color-bloom-teal: var(--jade-teal);
+  --color-bloom-amber: var(--marigold-orange);
+  --color-bloom-coral: var(--peony-pink);
+  --color-civic-violet: var(--orchid-violet);
 }
 
 /* Base resets & styled scrollbar */
@@ -101,4 +135,21 @@ html, body {
   --color-cream: #081E34 !important;
   --color-sage: #4E5E6C !important;
 }
+
+/* Reusable BloomCard Gentle Pulse Animation */
+@keyframes bloomPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 14px -1px rgba(255, 90, 78, 0.2);
+  }
+  50% {
+    transform: scale(1.015);
+    box-shadow: 0 8px 24px 2px rgba(255, 90, 78, 0.35);
+  }
+}
+
+.bloom-pulse {
+  animation: bloomPulse 2.5s infinite ease-in-out;
+}
+
 

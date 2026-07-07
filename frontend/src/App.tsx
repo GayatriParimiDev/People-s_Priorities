@@ -54,8 +54,15 @@ export default function App() {
   const [auditProposalId, setAuditProposalId] = useState<string | null>(null);
 
   // User Authentication State
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    const saved = localStorage.getItem("current_user");
+    try {
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [loading, setLoading] = useState(false);
 
   // Route protection and popstate synchronization
   useEffect(() => {
@@ -88,6 +95,7 @@ export default function App() {
             window.history.replaceState({}, "", "/citizen/dashboard");
             setCitizenTab("dashboard");
           }
+          setView("DASHBOARD");
         } else {
           if (path.startsWith("/citizen/")) {
             window.history.replaceState({}, "", "/dashboard");
@@ -143,6 +151,8 @@ export default function App() {
     async function restoreSession() {
       const token = localStorage.getItem("auth_token");
       if (!token) {
+        setCurrentUser(null);
+        localStorage.removeItem("current_user");
         setLoading(false);
         return;
       }
@@ -156,6 +166,7 @@ export default function App() {
         if (res.ok) {
           const data = await res.json();
           setCurrentUser(data.user);
+          localStorage.setItem("current_user", JSON.stringify(data.user));
           
           // Align representative and district if role is MP
           if (data.user.role === "MP") {
@@ -174,7 +185,9 @@ export default function App() {
           }
         } else {
           // Token expired or invalid
+          setCurrentUser(null);
           localStorage.removeItem("auth_token");
+          localStorage.removeItem("current_user");
         }
       } catch (err) {
         console.error("Assembly security gateway connection exception", err);
@@ -190,6 +203,7 @@ export default function App() {
   const handleLoginSuccess = (user: User, token: string) => {
     setCurrentUser(user);
     localStorage.setItem("auth_token", token);
+    localStorage.setItem("current_user", JSON.stringify(user));
 
     if (user.role === "MP") {
       setConfig(prev => ({
@@ -220,11 +234,14 @@ export default function App() {
     }
     setCurrentUser(null);
     localStorage.removeItem("auth_token");
+    localStorage.removeItem("current_user");
+    sessionStorage.removeItem("cta_clicked");
     setView("LANDING");
   };
 
   const handleUpdateUser = (updatedUser: User) => {
     setCurrentUser(updatedUser);
+    localStorage.setItem("current_user", JSON.stringify(updatedUser));
     
     if (updatedUser.role === "MP") {
       setConfig(prev => ({

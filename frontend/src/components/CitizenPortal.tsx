@@ -1612,7 +1612,7 @@ export default function CitizenPortal({
                             type="button"
                             onClick={handleReportSubmit}
                             disabled={duplicateChecking}
-                            className="px-5 py-2.5 bg-civic-violet hover:bg-civic-violet/90 text-white font-bold text-[10px] uppercase tracking-wider rounded-lg flex items-center space-x-1 shadow-md cursor-pointer disabled:opacity-55"
+                            className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[10px] uppercase tracking-wider rounded-lg flex items-center space-x-1 shadow-md cursor-pointer disabled:opacity-55"
                           >
                             <span>{duplicateChecking ? "Checking Duplicates..." : "Immutable Submit to Ledger"}</span>
                           </button>
@@ -1757,7 +1757,7 @@ export default function CitizenPortal({
                     <button
                       type="submit"
                       disabled={submitLoading || duplicateChecking}
-                      className="px-6 py-3 bg-indigo-650 hover:bg-indigo-700 text-white font-bold text-xs uppercase tracking-wider rounded-lg shadow-md cursor-pointer transition-all disabled:opacity-50 flex items-center space-x-1.5"
+                      className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs uppercase tracking-wider rounded-lg shadow-md cursor-pointer transition-all disabled:opacity-50 flex items-center space-x-1.5"
                     >
                       <span>{submitLoading ? t.filingFeedback : duplicateChecking ? "Checking Duplicates..." : t.submitLedger}</span>
                       {!submitLoading && !duplicateChecking && <Send className="w-3.5 h-3.5" />}
